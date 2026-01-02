@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neo Shiksha | Expert Home Tuitions in Delhi</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="container nav-flex">
+        
+        <a href="#" class="brand-wrapper">
+            <img src="assets/logo.png" alt="Neo Shiksha" class="brand-logo">
+            <span class="brand-tagline">Serving Since 2010</span>
+        </a>
+
+        <div class="hamburger" id="hamburgerBtn">
+            <i class="fas fa-bars"></i>
+        </div>
+
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#home" class="nav-item">Home</a></li>
+            
+            <li><a href="#process" class="nav-item">How It Works</a></li>
+            <li><a href="#parents" class="nav-item">For Parents</a></li>
+            <li><a href="#teachers" class="nav-item">For Teachers</a></li>
+            <li><a href="#about" class="nav-item">About</a></li>
+            <li><a href="#faq" class="nav-item">FAQs</a></li>
+            
+            <li>
+                <button class="btn-nav-cta" onclick="openCallbackForm()">Request Callback</button>
+            </li>
+        </ul>
+
+    </div>
+</nav>
+
+<header class="hero-section" id="home">
+    <div class="container hero-flex">
+        
+        <div class="hero-text">
+            
+            <h1 class="hero-title">
+                <span>Skills Beyond School</span>
+                <span>Success Beyond Life</span>
+            </h1>
+            
+            <p class="hero-desc">
+                Redefining Home Tuitions in Delhi. A space where mentorship meets transparency. 
+                Whether you are a parent seeking a verified guide or a teacher looking for 
+                100% of your hard-earned fee—you are home.
+            </p>
+            
+            <div class="hero-buttons">
+                <button class="btn-primary" id="heroParentBtn">Find a Tutor</button>
+                <button class="btn-secondary" id="heroTeacherBtn">Join as Teacher</button>
+            </div>
+        </div>
+
+        <div class="hero-image">
+            <div class="video-box">
+                <video width="100%" autoplay muted playsinline id="introVideo">
+                    <source src="assets/hero-video.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        </div>
+
+    </div>
+</header>
+
+<section class="why-section">
+        <div class="container">
+            
+            <span class="section-tag">THE TRANSPARENT SHIFT</span>
+            <h2 class="section-title">Fairness Through Process</h2>
+            <p class="section-subtitle">
+                A thoughtful system designed to replace agency pressure with professional respect.
+            </p>
+
+            <div class="toggle-container">
+                <button class="toggle-btn active" onclick="showParents()">For Parents</button>
+                <button class="toggle-btn" onclick="showTeachers()">For Teachers</button>
+            </div>
+
+            <div id="content-parents" class="comparison-container">
+                
+                <div class="compare-card card-old">
+                    <h3>Traditional Agencies</h3>
+                    <ul class="compare-list">
+                        <li><span class="icon-x">✕</span> Tutors assigned by availability</li>
+                        <li><span class="icon-x">✕</span> High-pressure sales approach</li>
+                        <li><span class="icon-x">✕</span> Middlemen-driven communication</li>
+                        <li><span class="icon-x">✕</span> Opaque screening methods</li>
+                    </ul>
+                </div>
+
+                <div class="compare-card card-neo">
+                    <h3>Neo Shiksha</h3>
+                    <ul class="compare-list">
+                        <li><span class="icon-check">✓</span> Personal review of tutor profiles</li>
+                        <li><span class="icon-check">✓</span> A slow, thoughtful 'fit' process</li>
+                        <li><span class="icon-check">✓</span> Transparent direct access</li>
+                        <li><span class="icon-check">✓</span> Personal verification standards</li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <div id="content-teachers" class="comparison-container" style="display: none;">
+                
+                <div class="compare-card card-old">
+                    <h3>Traditional Bureaus</h3>
+                    <ul class="compare-list">
+                        <li><span class="icon-x">✕</span> High commissions (50% - 100%)</li>
+                        <li><span class="icon-x">✕</span> Restricted parent contact</li>
+                        <li><span class="icon-x">✕</span> Random, long commutes</li>
+                        <li><span class="icon-x">✕</span> Rigid external agency rules</li>
+                    </ul>
+                </div>
+
+                <div class="compare-card card-neo">
+                    <h3>Neo Shiksha</h3>
+                    <ul class="compare-list">
+                        <li><span class="icon-check">✓</span> A zero-commission model</li>
+                        <li><span class="icon-check">✓</span> Direct communication channels</li>
+                        <li><span class="icon-check">✓</span> Preference-based local matching</li>
+                        <li><span class="icon-check">✓</span> Ownership of your teaching style</li>
+                    </ul>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+    
+<section class="process-section" id="process">
+        <div class="container">
+            <span class="section-tag">THE PROCESS</span>
+            
+            <h2 class="section-title">Simple. Transparent. Human.</h2>
+            <p class="section-subtitle">
+                We’ve stripped away complexity — no algorithms, just people helping people.
+            </p>
+
+            <div class="toggle-container">
+                <button class="toggle-btn active" id="btn-process-parent" onclick="showProcessParents()">How it Works: Parents</button>
+                <button class="toggle-btn" id="btn-process-teacher" onclick="showProcessTeachers()">How it Works: Teachers</button>
+            </div>
+
+            <div id="process-parents" class="process-wrapper">
+                <div class="process-grid">
+                    <div class="process-card">
+                        <div class="step-number">01</div>
+                        <h3>Tell Us What You Need</h3>
+                        <p>Fill a simple form: Class, subjects, and preferred timings. We respect your privacy—no spam, no endless sales calls.</p>
+                    </div>
+                    <div class="process-card">
+                        <div class="step-number">02</div>
+                        <h3>We Match Thoughtfully</h3>
+                        <p>We don’t forward numbers blindly. We manually shortlist teachers based on expertise and location. Fit matters more than speed.</p>
+                    </div>
+                    <div class="process-card">
+                        <div class="step-number">03</div>
+                        <h3>Connect & Demo</h3>
+                        <p>Speak directly with the teacher. Schedule a demo class to ensure the right fit. No pressure to continue if it doesn't feel right.</p>
+                    </div>
+                    <div class="process-card">
+                        <div class="step-number">04</div>
+                        <h3>Happy? Start Classes.</h3>
+                        <p>You pay the teacher directly. No agency interference. No hidden charges. Just clear expectations on both sides.</p>
+                    </div>
+                </div>
+                
+                <p class="process-trust-line">
+                    "Neo Shiksha exists to remove uncertainty from home tuitions — for parents and teachers alike."
+                </p>
+            </div>
+
+            <div id="process-teachers" class="process-wrapper" style="display: none;">
+                
+                <div class="process-grid">
+                    <div class="process-card">
+                        <div class="step-number">01</div>
+                        <h3>Join the Network</h3>
+                        <p>Tell us what you teach and where. We respect your boundaries — no random leads, no unreasonable travel.</p>
+                    </div>
+                    <div class="process-card">
+                        <div class="step-number">02</div>
+                        <h3>Verified for Trust</h3>
+                        <p>We manually verify basic credentials so parents feel safe and teachers are taken seriously. No interviews. No paperwork overload.</p>
+                    </div>
+                    <div class="process-card">
+                        <div class="step-number">03</div>
+                        <h3>Nearby Leads. Direct Contact.</h3>
+                        <p>For just ₹99/month, get access to your <strong>zone-wise WhatsApp community</strong>. See real requirements from nearby parents. No bidding. No middlemen.</p>
+                    </div>
+                    <div class="process-card">
+                        <div class="step-number">04</div>
+                        <h3>You Decide. You Earn.</h3>
+                        <p>Interested? Pay a small ₹99 demo fee, Get the Details, speak directly with the parent, and start classes. <strong>You keep 100% of earnings. Always.</strong></p>
+                    </div>
+                </div>
+
+                <p class="process-trust-line">
+                    "Hundreds of qualified teachers have already chosen Neo Shiksha because it finally treats teaching as a profession — not a commission source."
+                </p>
+
+                <div class="cost-reality-box">
+                    <h3 class="reality-title">A Simple Cost Reality</h3>
+                    <p class="reality-subtitle">
+                        Most agencies take an entire month’s fee.<br> At Neo Shiksha, you pay a small, predictable amount — so your earnings remain yours.
+                    </p>
+                    
+                    <div class="reality-flex">
+                        <div class="reality-item muted">
+                            <h4>Traditional Agency</h4>
+                            <span class="money">₹2,500</span>
+                            <span class="note">(You lose 50% commission,<br>sometimes even 100%)</span>
+                        </div>
+                        <div class="reality-divider">vs</div>
+                        <div class="reality-item highlighted">
+                            <h4>Neo Shiksha</h4>
+                            <span class="money">₹5,000</span>
+                            <span class="note">(You keep 100%. Forever.)</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+<section class="about-section" id="about">
+    <div class="container">
+        
+        <div class="about-flex">
+            
+            <div class="about-text">
+                <span class="section-tag">Why Neo Shiksha Exists</span>
+                <h2 class="about-headline">
+                    "I’ve sat on <span class="text-accent">both sides</span> of the table — as a teacher and as a parent."
+                </h2>
+                
+                <div class="story-block">
+                    <p>
+                        For over 15 years, I’ve worked inside classrooms, coaching institutes, and counselling rooms.
+                        I’ve seen teachers lose their hard-earned income to unfair commissions. 
+                        I’ve seen parents struggle to trust strangers sent by agencies who only care about closing a deal.
+                    </p>
+                    <p>
+                        <strong>Neo Shiksha was born from this gap</strong> — not as a business first, but as a correction to a broken process.
+                    </p>
+                </div>
+
+                <div class="values-block">
+                    <h4 class="values-title">What We Stand For:</h4>
+                    <ul class="values-list">
+                        <li>Transparency over tactics</li>
+                        <li>Fit over fast closures</li>
+                        <li>Respect for both teachers & parents</li>
+                    </ul>
+                </div>
+
+                <div class="credentials-block">
+                    <p class="cred-text">
+                        <strong>M.A. Mathematics | B.Ed | GNIIT</strong> • 15+ Years in Education <br>
+                        <span class="faded-text">Former School Faculty & Career Counsellor</span>
+                    </p>
+                </div>
+            </div>
+
+            <div class="about-gallery-wrapper">
+                <div class="gallery-track">                    
+                    <div class="gallery-item">
+                        <img src="assets/mentor.png" alt="Maths STEM">
+                        <span class="gallery-caption">District level 1st Position Maths STEM 2025</span>
+                    </div>
+                    <div class="gallery-item">
+                        <img src="assets/mathstem.png" alt="Maths STEM">
+                        <span class="gallery-caption">District level 1st Position Maths STEM 2025</span>
+                    </div>                   
+                    <div class="gallery-item">
+                        <img src="assets/changemaker.jpg" alt="Award">
+                        <span class="gallery-caption">Awarded for Remarkable Contribution</span>
+                    </div>
+                    <div class="gallery-item">
+                        <img src="assets/CU.JPG" alt="CU Session">
+                        <span class="gallery-caption">Career Counselling at Chandigarh University</span>
+                    </div>
+                    <div class="gallery-item">
+                        <img src="assets/sciencestem.png" alt="Science STEM">
+                        <span class="gallery-caption">District level1st Position Science STEM 2025</span>
+                    </div>
+                    <div class="gallery-item">
+                        <img src="assets/shiksharatna.JPG" alt="Shiksharatna">
+                        <span class="gallery-caption">Awarded Shiksharatna for Outstanding Results</span>
+                    </div>
+                    <div class="gallery-item">
+                        <img src="assets/amity.JPG" alt="Amity Training">
+                        <span class="gallery-caption">Teacher Training Forums (Amity)</span>
+                    </div>
+                    <div class="gallery-item">
+                        <img src="assets/AU.jpg" alt="AU Training">
+                        <span class="gallery-caption">Teacher Training Forums (AU)</span>
+                    </div>
+                    <div class="gallery-item">
+                        <img src="assets/AU1.JPG" alt="Amity Noida">
+                        <span class="gallery-caption">Counselling with Amity Students</span>
+                    </div>
+                </div>
+                <div class="gallery-fade-top"></div>
+                <div class="gallery-fade-bottom"></div>
+            </div>
+
+        </div>
+
+        <!-- =====================================================
+           MOBILE-ONLY GALLERY (Self-Contained Component)
+           - This block is hidden on desktop and visible only on mobile.
+           - It uses its own CSS and JS to prevent conflicts with the desktop gallery.
+           ===================================================== -->
+        <div class="mobile-gallery-wrapper">
+            <div class="mobile-gallery-track">
+                <!-- Images are duplicated here for a seamless mobile-only animation loop -->
+                <div class="mobile-gallery-item"><img src="assets/mentor.png" alt="Founder Mentor"></div>
+                <div class="mobile-gallery-item"><img src="assets/mathstem.png" alt="Maths STEM"></div>
+                <div class="mobile-gallery-item"><img src="assets/changemaker.jpg" alt="Award for changemaker"></div>
+                <div class="mobile-gallery-item"><img src="assets/CU.JPG" alt="Career Counselling at Chandigarh University"></div>
+                <div class="mobile-gallery-item"><img src="assets/sciencestem.png" alt="Science STEM"></div>
+                <div class="mobile-gallery-item"><img src="assets/shiksharatna.JPG" alt="Shiksharatna Award"></div>
+                <div class="mobile-gallery-item"><img src="assets/amity.JPG" alt="Teacher Training at Amity"></div>
+                <div class="mobile-gallery-item"><img src="assets/AU.jpg" alt="Teacher Training at AU"></div>
+                <div class="mobile-gallery-item"><img src="assets/AU1.JPG" alt="Counselling with Amity Students"></div>
+                <!-- Duplicate set for smooth infinite scroll -->
+                <div class="mobile-gallery-item"><img src="assets/mathstem.png" alt="Maths STEM"></div>
+                <div class="mobile-gallery-item"><img src="assets/mentor.png" alt="Founder Mentor"></div>
+                <div class="mobile-gallery-item"><img src="assets/changemaker.jpg" alt="Award for changemaker"></div>
+                <div class="mobile-gallery-item"><img src="assets/CU.JPG" alt="Career Counselling at Chandigarh University"></div>
+                <div class="mobile-gallery-item"><img src="assets/sciencestem.png" alt="Science STEM"></div>
+                <div class="mobile-gallery-item"><img src="assets/shiksharatna.JPG" alt="Shiksharatna Award"></div>
+                <div class="mobile-gallery-item"><img src="assets/amity.JPG" alt="Teacher Training at Amity"></div>
+                <div class="mobile-gallery-item"><img src="assets/AU.jpg" alt="Teacher Training at AU"></div>
+                <div class="mobile-gallery-item"><img src="assets/AU1.JPG" alt="Counselling with Amity Students"></div>
+            </div>
+            <div class="gallery-fade-top"></div>
+            <div class="gallery-fade-bottom"></div>
+        </div>
+
+        <div class="recognition-block">
+            <span class="rec-label">Independent Acknowledgement</span>
+            <p class="rec-text">
+                My work in <strong>STEM deliberation</strong> was recognized as a District Champion and featured by 
+                <a href="https://www.tribuneindia.com/news/schools/the-new-cambridge-international-school-mohali-shines-at-stem-education-event/amp/" target="_blank" class="tribune-link">The Tribune</a>.
+            </p>
+            <p class="rec-text" style="margin-top: 5px;">
+                Additionally, my research paper has been selected for the 
+                <strong>National Teachers' Conference, Patna 2025</strong>.
+            </p>
+        </div>
+
+        <p class="trust-anchor" style="text-align: center; margin-top: 20px;">
+            Neo Shiksha is not built to scale fast — it is built to work right.
+        </p>
+       
+    </div>
+</section>
+
+<section class="parents-section" id="parents">
+        <div class="container parent-flex">
+            
+            <div class="parent-content">
+                <span class="section-tag">FOR PARENTS</span>
+                <h2 class="section-title">Well Qualified Trusted Tutors. Verified for Peace of Mind.</h2>
+                <p class="section-subtitle">
+                    Your child deserves the best guidance, not just a lead. We connect you with experienced, 
+                    background-verified tutors who care about results.
+                </p>
+                
+                <div class="action-buttons">
+                    <button class="btn-primary" onclick="openParentForm()">Find a Tutor</button>
+                    
+                    <button class="btn-outline" onclick="openCallbackForm()">Request a Callback</button>
+                </div>
+            </div>
+
+        </div>
+    </section>
+    
+<section class="teachers-section" id="teachers">
+        <div class="container parent-flex">
+            
+            <div class="parent-content">
+                <span class="section-tag">FOR TEACHERS</span>
+                <h2 class="section-title">Quality Education shouldn't come with a 'Middleman Tax'.</h2>
+                <p class="section-subtitle">
+                    Join Delhi's only platform that connects dedicated teachers directly with serious parents. 
+                    No hidden commissions, just a supportive community.
+                </p>
+                
+                <div class="action-buttons">
+                    <button class="btn-primary" onclick="openTeacherForm()">Join as Teacher</button>
+                    <button class="btn-outline" onclick="openCallbackForm()">Request a Callback</button>
+                </div>
+            </div>
+
+        </div>
+    </section>    
+
+<section class="faq-section" id="faq">
+        <div class="container">
+            <span class="section-tag">CLEARING DOUBTS</span>
+            <h2 class="section-title">Common Questions</h2>
+            
+            <div class="faq-grid">
+                
+                <div class="faq-column">
+                    <h3 class="faq-col-title">For Parents</h3>
+                    
+                    <div class="faq-item">
+                        <button class="faq-question">Are the tutors verified?</button>
+                        <div class="faq-answer">
+                            <p>Yes. Every teacher on Neo Shiksha undergoes a manual profile review. We check their identity and academic background before they enter our community.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <button class="faq-question">Do I pay Neo Shiksha or the Teacher?</button>
+                        <div class="faq-answer">
+                            <p>You pay the teacher directly. We do not handle your monthly fees, nor do we take a cut from it. This ensures transparency.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <button class="faq-question">What if the demo doesn't work out?</button>
+                        <div class="faq-answer">
+                            <p>No pressure. If the fit isn't right, let us know. We will help you find another mentor without any awkward sales calls.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <button class="faq-question">Will I get too many calls?</button>
+                        <div class="faq-answer">
+                            <p>No. We don’t sell your number or forward it to multiple teachers. You’re contacted only when there’s a genuine match.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-column">
+                    <h3 class="faq-col-title">For Teachers</h3>
+                    
+                    <div class="faq-item">
+                        <button class="faq-question">Why is there a registration fee?</button>
+                        <div class="faq-answer">
+                            <p>The small fee (₹99) acts as a filter to ensure only serious, committed educators join the platform. It keeps the community spam-free.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <button class="faq-question">Is it really 0% commission?</button>
+                        <div class="faq-answer">
+                            <p>Absolutely. Once you connect with a parent, the relationship is yours. We never ask for a share of your monthly earnings.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <button class="faq-question">How do I get leads?</button>
+                        <div class="faq-answer">
+                            <p>Verified teachers are added to zone-wise WhatsApp communities. We post requirements there, and you can apply instantly.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <button class="faq-question">Am I required to accept every lead?</button>
+                        <div class="faq-answer">
+                            <p>No. You choose which leads to respond to. We respect your availability and preferences.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+<footer class="footer-section">
+        <div class="container">
+            
+            <div class="footer-grid">
+                
+                <div class="footer-col">
+                    <img src="assets/logo.png" alt="Neo Shiksha" class="footer-logo">
+                    <p>
+                        "Neo Shiksha is a mission to make education a journey of <br>transformation, not just a transaction." 
+                        
+                    </p>
+                </div>
+
+                <div class="footer-col">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="#">Home</a></li>
+                        <li><a href="#">About Mentor</a></li>
+                        <li><a href="#">For Parents</a></li>
+                        <li><a href="#">Join as Teacher</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h3>Contact Us</h3>
+                    <p>📍 East Delhi, India</p>
+                    <p>📞 +91 9555577881</p>
+                    <p>📧 neoshikshaacademy@gmail.com</p>
+                </div>
+
+                <div class="footer-col">
+                    <h3>Follow Us</h3>
+                    <div class="social-links">
+                        <a href="https://www.facebook.com/neoshiksha" target="_blank" class="social-btn fb">
+                            <i class="fab fa-facebook"></i>  Facebook 
+                        </a>
+                        <a href="https://www.instagram.com/neoshiksha" target="_blank" class="social-btn insta">
+                            <i class="fab fa-instagram"></i>  Instagram
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2024 Neo Shiksha. All Rights Reserved.</p>
+                <p>Designed with ❤️ by Founder</p>
+            </div>
+
+        </div>
+    </footer>
+
+<div id="parentModal" class="modal">
+        <div class="modal-content large-modal">
+            <span class="close-btn" id="closeParent">&times;</span>
+            
+            <h2 style="text-align: center; margin-bottom: 20px;">Find Your <span class="text-accent">Perfect Tutor</span></h2>
+            
+            <form id="parentForm">
+                
+                <div class="form-grid">
+                    
+                    <div class="form-col">
+                        <h4 class="form-heading">1. Personal Details</h4>
+                        <input type="text" name="parentName" placeholder="Your Name" required class="dark-input">
+                        <input type="tel" name="phone" placeholder="WhatsApp Number" required class="dark-input">
+                        
+                        <select id="parentCitySelect" name="city" required class="dark-input">
+                            <option value="" disabled selected>Select City</option>
+                            <option value="Delhi">Delhi</option>
+                            <option value="Tricity">Tricity (Chandigarh/Mohali/Panchkula)</option>
+                        </select>
+
+                        <select id="parentZoneSelect" name="zone" required class="dark-input" disabled>
+                            <option value="" disabled selected>Select Zone</option>
+                        </select>
+
+                        <input type="text" name="locality" placeholder="Area / Locality (e.g. Sector 17 OR Vivek Vihar)" required class="dark-input">
+                        
+                        <input type="tel" name="pincode" placeholder="PIN Code (Optional)" class="dark-input" maxlength="6" pattern="[0-9]*" style="margin-bottom: 5px;">
+                        <small class="input-helper">
+                            Helps us find trusted teachers near your location.
+                        </small>
+                    </div>
+
+                    <div class="form-col">
+                        <h4 class="form-heading">2. Requirement Details</h4>
+                        
+                        <div class="row-flex">
+                            <select name="class" required class="dark-input half-width">
+                                <option value="" disabled selected>Select Class</option>
+                                <option value="1st to 5th">1st to 5th</option>
+                                <option value="6th to 8th">6th to 8th</option>
+                                <option value="9th">9th</option>
+                                <option value="10th">10th</option>
+                                <option value="11th">11th</option>
+                                <option value="12th">12th</option>
+                                <option value="Bachelors">Bachelors</option>
+                                <option value="Masters">Masters</option>
+                            </select>
+
+                            <select name="board" required class="dark-input half-width">
+                                <option value="" disabled selected>Board</option>
+                                <option value="CBSE">CBSE</option>
+                                <option value="ICSE">ICSE</option>
+                                <option value="IGCSE">IGCSE</option>
+                                <option value="IB">IB</option>
+                                <option value="State Board">State Board</option>
+                            </select>
+                        </div>
+
+                        <div class="row-flex">
+                            <select name="mode" required class="dark-input half-width">
+                                <option value="" disabled selected>Mode</option>
+                                <option value="Offline">Offline</option>
+                                <option value="Online">Online</option>
+                                <option value="Hybrid">Hybrid</option>
+                            </select>
+
+                            <select name="gender" class="dark-input half-width">
+                                <option value="Any" selected>Any Gender</option>
+                                <option value="Male">Male Tutor</option>
+                                <option value="Female">Female Tutor</option>
+                            </select>
+                        </div>
+
+                        <label class="input-label">Select Subjects:</label>
+                        <div class="checkbox-container">
+                            <label><input type="checkbox" name="subjects" value="All Subjects"> All Subjects</label>
+                            <label><input type="checkbox" name="subjects" value="Maths"> Maths</label>
+                            <label><input type="checkbox" name="subjects" value="Science"> Science</label>
+                            <label><input type="checkbox" name="subjects" value="English"> English</label>
+                            <label><input type="checkbox" name="subjects" value="Hindi"> Hindi</label>
+                            <label><input type="checkbox" name="subjects" value="Social Science"> Social Science</label>
+                            <label><input type="checkbox" name="subjects" value="Physics"> Physics</label>
+                            <label><input type="checkbox" name="subjects" value="Chemistry"> Chemistry</label>
+                            <label><input type="checkbox" name="subjects" value="Biology"> Biology</label>
+                            <label><input type="checkbox" name="subjects" value="Accounts"> Accounts</label>
+                            <label><input type="checkbox" name="subjects" value="Economics"> Economics</label>
+                            <label><input type="checkbox" name="subjects" value="Business Studies"> Business Studies</label>
+                            <label><input type="checkbox" name="subjects" value="Computer Science"> Computer Science</label>
+                            <label><input type="checkbox" name="subjects" value="French"> French</label>
+                            <label><input type="checkbox" name="subjects" value="German"> German</label>
+                        </div>
+                        
+                        <div class="optional-fields">
+                            <label class="input-label" style="margin-top:10px;">Optional Preferences:</label>
+                            <div class="row-flex">
+                                <select name="classesPerWeek" class="dark-input half-width">
+                                    <option value="" selected>Classes/Week</option>
+                                    <option value="3 Days">3 Days</option>
+                                    <option value="5 Days">5 Days</option>
+                                    <option value="Weekend">Weekend</option>
+                                </select>
+                                <select name="duration" class="dark-input half-width">
+                                    <option value="" selected>Duration</option>
+                                    <option value="1 hr">1 hr</option>
+                                    <option value="1.5 hr">1.5 hr</option>
+                                    <option value="2 hr">2 hr</option>
+                                </select>
+                            </div>
+                        </div>
+
+                    </div> 
+                </div> 
+                <button type="submit" class="btn-primary full-width" style="margin-top: 20px; font-size: 1.1rem;">Request Verified Tutor</button>
+            </form>
+
+            <div id="parentSuccess" class="success-box" style="display: none;">
+                <span class="success-icon">✅</span>
+                <h3 class="success-title">Request Submitted!</h3>
+                <p class="success-desc">
+                    Form submitted successfully, our representative will call you shortly. 
+                    Till then, you can check us out on social media.
+                </p>
+                
+                <div class="social-row">
+                    <a href="https://www.facebook.com/neoshiksha" target="_blank" class="social-icon-btn fb">
+                        <i class="fab fa-facebook"></i>
+                    </a>
+    
+                    <a href="https://www.instagram.com/neoshiksha" target="_blank" class="social-icon-btn insta">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+<div id="callbackModal" class="modal">
+        <div class="modal-content small-modal">
+            <span class="close-btn" onclick="closeCallbackForm()">&times;</span>
+            
+            <h2>Request a <span class="text-accent">Call Back</span></h2>
+            <p style="color:#ccc; margin-bottom:15px;">Share your number, and our counselor will call you within 24 hours.</p>
+            
+            <form id="callbackForm">
+                <input type="text" name="name" placeholder="Your Name" required class="dark-input">
+                <input type="tel" name="phone" placeholder="WhatsApp Number" required class="dark-input">
+                
+                <button type="submit" class="btn-primary full-width">Call Me Back</button>
+            </form>
+        </div>
+    </div>
+
+<div id="teacherModal" class="modal">
+        <div class="modal-content large-modal">
+            <span class="close-btn" id="closeTeacher">&times;</span>
+            
+            <div id="teacherModalHeader">
+                <h2 style="text-align: center; margin-bottom: 10px;">Join <span class="text-accent">Neo Shiksha</span></h2>
+                <p style="text-align: center; color: #aaa; font-size: 0.9rem; margin-bottom: 20px;">
+                    Fill the form below to start your verification process.
+                </p>
+            </div>
+            
+            <form id="teacherForm">
+                
+                <div class="form-grid">
+                    
+                    <div class="form-col">
+                        <h4 class="form-heading">1. Personal Details</h4>
+                        <input type="text" name="teacherName" placeholder="Full Name" required class="dark-input">
+                        <input type="tel" name="phone" placeholder="WhatsApp Number" required class="dark-input">
+                        
+                        <select name="gender" required class="dark-input">
+                            <option value="" disabled selected>Select Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+
+                        <select id="teacherCitySelect" name="city" required class="dark-input">
+                            <option value="" disabled selected>Select City</option>
+                            <option value="Delhi">Delhi NCR</option>
+                            <option value="Tricity">Tricity (Chandigarh/Mohali/Panchkula)</option>
+                        </select>
+
+                        <select id="teacherZoneSelect" name="zone" required class="dark-input" disabled>
+                            <option value="" disabled selected>Select Zone</option>
+                        </select>
+
+                        <input type="text" name="locality" placeholder="Area / Locality (e.g. Sector 17 or GreenPark)" required class="dark-input">
+
+                        <input type="tel" name="pincode" placeholder="PIN Code (Optional)" class="dark-input" maxlength="6" pattern="[0-9]*" style="margin-bottom: 5px;">
+                        <small class="input-helper">
+                            Used only to match you with nearby student requirements.
+                        </small>
+                    </div>
+
+                    <div class="form-col">
+                        <h4 class="form-heading">2. Professional Profile</h4>
+                        
+                        <div class="row-flex">
+                            <select name="qualification" required class="dark-input half-width">
+                                <option value="" disabled selected>Highest Qualification</option>
+                                <option value="Graduate">Graduate</option>
+                                <option value="Postgraduate">Postgraduate</option>
+                                <option value="PhD">PhD</option>
+                            </select>
+
+                            <select name="experience" required class="dark-input half-width">
+                                <option value="" disabled selected>Teaching Exp.</option>
+                                <option value="Fresher">Fresher</option>
+                                <option value="1-3 Years">1-3 Years</option>
+                                <option value="3-5 Years">3-5 Years</option>
+                                <option value="5-10 Years">5-10 Years</option>
+                                <option value="10+ Years">10+ Years</option>
+                            </select>
+                        </div>
+
+                        <select name="mode" required class="dark-input">
+                            <option value="" disabled selected>Preferred Teaching Mode</option>
+                            <option value="Online">Online</option>
+                            <option value="Offline">Offline (Home Tuition)</option>
+                            <option value="Hybrid">Hybrid</option>
+                        </select>
+
+                        <label class="input-label">Classes You Teach:</label>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" name="classes" value="Primary"> Primary (1-5)</label>
+                            <label><input type="checkbox" name="classes" value="Middle"> Middle (6-8)</label>
+                            <label><input type="checkbox" name="classes" value="Secondary"> Secondary (9-10)</label>
+                            <label><input type="checkbox" name="classes" value="Senior Secondary"> Senior Sec (11-12)</label>
+                        </div>
+
+                        <label class="input-label" style="margin-top:10px;">Boards:</label>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" name="boards" value="CBSE"> CBSE</label>
+                            <label><input type="checkbox" name="boards" value="ICSE"> ICSE</label>
+                            <label><input type="checkbox" name="boards" value="IGCSE"> IGCSE</label>
+                            <label><input type="checkbox" name="boards" value="IB"> IB</label>
+                        </div>
+
+                        <label class="input-label" style="margin-top:10px;">Subjects (Select Multiple):</label>
+                        <div class="checkbox-container">
+                            <label><input type="checkbox" name="subjects" value="Maths"> Maths</label>
+                            <label><input type="checkbox" name="subjects" value="Science"> Science</label>
+                            <label><input type="checkbox" name="subjects" value="English"> English</label>
+                            <label><input type="checkbox" name="subjects" value="Hindi"> Hindi</label>
+                            <label><input type="checkbox" name="subjects" value="Social Science"> Social Science</label>
+                            <label><input type="checkbox" name="subjects" value="Physics"> Physics</label>
+                            <label><input type="checkbox" name="subjects" value="Chemistry"> Chemistry</label>
+                            <label><input type="checkbox" name="subjects" value="Biology"> Biology</label>
+                            <label><input type="checkbox" name="subjects" value="Accounts"> Accounts</label>
+                            <label><input type="checkbox" name="subjects" value="Economics"> Economics</label>
+                            <label><input type="checkbox" name="subjects" value="Business Studies"> Business Studies</label>
+                            <label><input type="checkbox" name="subjects" value="Computer Science"> Computer Science</label>
+                            <label><input type="checkbox" name="subjects" value="French"> French</label>
+                            <label><input type="checkbox" name="subjects" value="German"> German</label>
+                        </div>
+
+                    </div> 
+                </div> 
+                <button type="submit" class="btn-primary full-width" style="margin-top: 20px; font-size: 1.1rem;">
+                    Proceed to Verification & Payment
+                </button>
+            </form>
+
+            <div id="teacherPaymentIntro" style="display: none;">
+                <div class="payment-intro-box">
+                    <h3 style="color: #fff; margin-bottom: 10px;">Membership Activation</h3>
+                    
+                    <span class="price-tag">₹99 <small style="font-size: 1rem; color: #888; font-weight: 400;">/ month</small></span>
+                    
+                    <ul class="trust-badge-list">
+                        <li><span class="check-gold">✓</span> Serious & Spam-free Community</li>
+                        <li><span class="check-gold">✓</span> 100% Direct Leads (No Middlemen)</li>
+                        <li><span class="check-gold">✓</span> <strong>Zero Commission</strong> on your earnings</li>
+                    </ul>
+
+                    <button class="btn-primary full-width" onclick="showQrCode()">
+                        Proceed to Pay ₹99
+                    </button>
+                    
+                    <p style="margin-top: 15px; color: #666; font-size: 0.8rem;">
+                        Secure Payment via UPI
+                    </p>
+                </div>
+            </div>
+
+            <div id="paymentSection" style="display: none; text-align: center; margin-top: 20px;">
+                
+                <div style="margin-bottom: 15px;">
+                    <div style="font-size: 2.5rem; margin-bottom: 10px;">🛡️</div>
+                    <h3 style="color: #fff; font-size: 1.3rem; font-weight: 600; margin-bottom: 8px;">
+                        Confirm Your Spot in the <br>
+                        <span style="color: var(--accent-color);">Verified Teacher Network</span>
+                    </h3>
+                </div>
+
+                <p style="color: #ddd; font-size: 0.95rem; line-height: 1.5; margin-bottom: 5px;">
+                    Pay a one-time ₹99 verification fee.<br>
+                    Once confirmed, you’ll receive access to your zone-wise WhatsApp teacher community.
+                </p>
+
+                <p style="color: #777; font-size: 0.8rem; margin-bottom: 25px;">
+                    No commissions. No renewals. No hidden charges.
+                </p>
+
+                <div style="background: white; padding: 10px; display: inline-block; border-radius: 12px; margin-bottom: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.3);">
+                    <img src="assets/qr-code.jpg" alt="Pay 99 via UPI" style="width: 160px; height: 160px; display: block;">
+                </div>
+                
+                <p style="color: #aaa; font-size: 0.85rem; margin-bottom: 25px;">
+                    Scan & pay ₹99 using any UPI app
+                </p>
+
+                <a href="https://wa.me/919876543210?text=Hello%20Neo%20Shiksha,%20I%20have%20paid%20Rs%2099.%20Here%20is%20my%20screenshot." 
+                   target="_blank" 
+                   class="btn-primary full-width" 
+                   style="background-color: #25D366; color: white; border: none; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                    <span style="font-size: 1.3rem;">📲</span> 
+                    <span style="font-weight: 600;">Send Payment Screenshot on WhatsApp</span>
+                </a>
+                
+                <p style="color: #555; font-size: 0.75rem; margin-top: 8px; margin-bottom: 20px;">
+                    You’ll receive your WhatsApp community link immediately after payment confirmation.
+                </p>
+
+                <div style="border-top: 1px solid #222; padding-top: 15px;">
+                    <p style="color: #666; font-size: 0.8rem; font-weight: 500;">
+                        Pay ₹99 &nbsp; <span style="color:#444">→</span> &nbsp; Send Screenshot &nbsp; <span style="color:#444">→</span> &nbsp; Get Community Access
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+
+    <script src="script.js"></script>
+</body>
+</html>
