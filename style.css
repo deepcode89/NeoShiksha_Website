@@ -42,6 +42,13 @@ body {
     line-height: 1.6;
 }
 
+/* Scroll lock class: prevents background scrolling when modal is open */
+/* Scroll lock class: prevents background scrolling when modal is open
+   NOTE: position is managed via inline styles in JS to preserve page scroll position. */
+body.scroll-locked {
+    overflow: hidden;
+}
+
 .container {
     width: 90%;
     max-width: 1200px;
@@ -166,6 +173,12 @@ body {
    MOBILE NAVBAR (Hamburger & Slide Menu) - FIXED
    ========================================= */
 @media (max-width: 768px) {
+    /* Prevent horizontal scrolling on small screens so hidden off-canvas
+       elements (like the mobile nav) cannot be revealed by side-scrolling. */
+    html, body {
+        overflow-x: hidden;
+    }
+
     .hamburger {
         display: block; /* Show icon */
     }
@@ -187,11 +200,11 @@ body {
         flex-direction: column;
         align-items: center;
         justify-content: flex-start;
-        padding-top: 20px; 
+        padding-top: 10px; 
         transition: 0.4s ease-in-out;
-        
+
         overflow-y: auto; 
-        padding-bottom: 80px; 
+        padding-bottom: 20px; 
     }
 
     /* Active Class adds Slide Effect */
@@ -200,15 +213,15 @@ body {
     }
 
     .nav-links li {
-        margin: 10px 0; /* Gap kam kiya taaki ek screen me zyada dikhe */
+        margin: 6px 0; /* reduced vertical gap so more items fit */
         width: 100%;
         text-align: center;
     }
 
     .nav-links a.nav-item {
-        font-size: 1.1rem; /* Font thoda chhota kiya */
+        font-size: 1rem; /* slightly smaller to conserve vertical space */
         display: block;
-        padding: 10px;
+        padding: 8px 10px; /* less vertical padding */
     }
 
     /* Mobile CTA Button */
@@ -1078,6 +1091,113 @@ body {
 
 
 
+/* Mobile Responsive: Stack Columns & Usability Enhancements */
+@media (max-width: 768px) {
+    /* =========================================
+       ANTI-ZOOM FIX (Critical for iOS)
+       ========================================= */
+    input,
+    select,
+    textarea {
+        font-size: 16px !important; /* Prevents auto-zoom on iOS/Android */
+    }
+
+    /* =========================================
+       TOUCH TARGET SIZING (44px minimum)
+       ========================================= */
+    .dark-input {
+        font-size: 16px !important; /* Reiterate for form inputs */
+        min-height: 44px; /* Touch target minimum */
+        padding: 12px 15px !important; /* Ensure comfortable tap area */
+        margin-bottom: 15px !important; /* Space between fields */
+    }
+
+    .btn-primary,
+    .btn-secondary,
+    .btn-outline,
+    .btn-nav-cta {
+        min-height: 44px; /* Touch target for buttons */
+        font-size: 16px !important; /* Prevent zoom */
+        padding: 12px 20px !important; /* Comfortable tap area */
+    }
+
+    /* Checkbox & Radio touch targets */
+    .checkbox-container label,
+    .checkbox-group label {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        padding: 8px 0;
+        font-size: 16px !important;
+    }
+
+    .checkbox-container input,
+    .checkbox-group input {
+        min-width: 20px;
+        min-height: 20px;
+        margin-right: 12px;
+        cursor: pointer;
+    }
+
+    /* Select dropdowns */
+    select {
+        min-height: 44px;
+        padding: 12px 15px;
+        font-size: 16px !important;
+    }
+
+    /* =========================================
+       FORM SPACING (Mobile Specific)
+       ========================================= */
+    .form-col {
+        margin-bottom: 10px;
+    }
+
+    .row-flex {
+        gap: 12px;
+    }
+
+    .half-width {
+        font-size: 16px !important;
+        min-height: 44px;
+    }
+
+    /* Helper text should not add to zoom issues */
+    .input-helper {
+        font-size: 14px; /* Keep readable but smaller */
+        margin-bottom: 12px;
+    }
+
+    /* Checkbox container scrolling */
+    .checkbox-container {
+        font-size: 16px !important;
+        max-height: 150px;
+        padding: 12px;
+    }
+
+    .checkbox-container label {
+        font-size: 16px !important;
+        margin-bottom: 8px;
+    }
+
+    /* =========================================
+       MODAL MOBILE ADJUSTMENTS
+       ========================================= */
+    .small-modal {
+        width: 90%;
+        padding: 20px;
+    }
+
+    .small-modal input {
+        font-size: 16px !important;
+        min-height: 44px;
+        margin-bottom: 15px;
+    }
+}
+
+
+
+
 
 /* =========================================
    MODAL BASE STYLING (To Hide Form on Load)
@@ -1092,6 +1212,33 @@ body {
     height: 100%; 
     overflow: auto; 
     background-color: rgba(0,0,0,0.8); /* Background Overlay (Dark) */
+}
+
+/* Modal content scrolling & safe-area padding */
+.modal .modal-content {
+    -webkit-overflow-scrolling: touch; /* smooth scrolling on iOS */
+    overflow-y: auto;
+    /* ensure there is breathing room under the last element (submit button) */
+    padding-bottom: calc(28px + env(safe-area-inset-bottom, 20px));
+    max-height: calc(100vh - 40px);
+}
+
+/* Use dynamic viewport units where available to avoid mobile browser chrome cutting content */
+@supports (height: 100dvh) {
+    .large-modal {
+        max-height: calc(100dvh - 40px);
+    }
+    .small-modal {
+        max-height: calc(100dvh - 40px);
+    }
+}
+
+/* Fallback to normal viewport units */
+.large-modal {
+    max-height: calc(100vh - 40px);
+}
+.small-modal {
+    max-height: calc(100vh - 40px);
 }
 
 

@@ -8,10 +8,143 @@ const heroTeacherBtn = document.getElementById("heroTeacherBtn");
 const teacherModal = document.getElementById("teacherModal");
 const callbackModal = document.getElementById("callbackModal");
 
-
 // Close Buttons
 const closeParent = document.getElementById("closeParent");
 const closeTeacher = document.getElementById("closeTeacher");
+
+// NEW: backend script URL (paste your deployed Apps Script URL here)
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbylG9MdHEZkTBXaMKO03Bts-EJfcDSLm-c8AUnev8O4Ii7T8SE57b_c5D9v-eLiBKeV0Q/exec';
+
+/* Consolidated DOM references (forms, selects, buttons) - declared once */
+const parentForm = document.getElementById('parentForm');
+const parentSuccess = document.getElementById('parentSuccess');
+const parentCitySelect = document.getElementById('parentCitySelect');
+const parentZoneSelect = document.getElementById('parentZoneSelect');
+
+const teacherForm = document.getElementById('teacherForm');
+const teacherPaymentIntro = document.getElementById('teacherPaymentIntro');
+const teacherModalHeader = document.getElementById('teacherModalHeader');
+const teacherCitySelect = document.getElementById('teacherCitySelect');
+const teacherZoneSelect = document.getElementById('teacherZoneSelect');
+
+const callbackForm = document.getElementById('callbackForm');
+
+// Scroll lock helpers (preserve/restore page scroll position)
+let __savedScrollY = 0;
+function lockScroll() {
+    if (document.body.dataset.scrollLocked === 'true') return;
+    __savedScrollY = window.scrollY || window.pageYOffset || 0;
+    document.body.dataset.scrollLocked = 'true';
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${__savedScrollY}px`;
+    document.body.style.width = '100%';
+}
+
+function unlockScroll() {
+    if (document.body.dataset.scrollLocked !== 'true') return;
+    document.body.dataset.scrollLocked = 'false';
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.width = '';
+    window.scrollTo(0, __savedScrollY);
+}
+
+// ==================================================
+// BACK BUTTON HANDLER (Mobile UX Fix)
+// ==================================================
+let modalStack = []; // Track which modal is currently open
+
+function pushModalState(modalName) {
+    /* Push a history state when modal opens.
+       This creates a "virtual" navigation step so the back button
+       will trigger popstate instead of navigating away. */
+    modalStack.push(modalName);
+    window.history.pushState({ modal: modalName }, '', window.location.href);
+}
+
+function popModalState() {
+    /* Called when back button is pressed.
+       Removes the last modal from stack. */
+    if (modalStack.length > 0) {
+        modalStack.pop();
+        return true;
+    }
+    return false;
+}
+
+function isModalOpen() {
+    /* Check if any modal is currently visible. */
+    return (
+        (parentModal && parentModal.style.display === 'block') ||
+        (teacherModal && teacherModal.style.display === 'block') ||
+        (callbackModal && callbackModal.style.display === 'block')
+    );
+}
+
+function isMenuOpen() {
+    /* Check if the hamburger menu is currently open. */
+    return navLinks && navLinks.classList.contains('active');
+}
+
+// Intercept browser back button
+window.addEventListener('popstate', (event) => {
+    /* When user presses back:
+       - If a menu is open, close it first.
+       - If a modal is open, close it.
+       - Otherwise, allow normal navigation (browser will go back). */
+    
+    // Priority 1: Close menu if open (prevents routing away from page)
+    if (isMenuOpen()) {
+        event.preventDefault();
+        closeHamburgerMenu();
+        return;
+    }
+    
+    // Priority 2: Close modal if open
+    if (isModalOpen()) {
+        event.preventDefault();
+        
+        // Close the currently open modal
+        if (parentModal && parentModal.style.display === 'block') {
+            parentModal.style.display = 'none';
+            unlockScroll();
+        } else if (teacherModal && teacherModal.style.display === 'block') {
+            teacherModal.style.display = 'none';
+            unlockScroll();
+        } else if (callbackModal && callbackModal.style.display === 'block') {
+            callbackModal.style.display = 'none';
+            unlockScroll();
+        }
+        
+        // Remove from modal stack
+        popModalState();
+        return;
+    }
+    
+    /* If neither menu nor modal is open, the back event proceeds normally. */
+});
+
+// ==================================================
+// UNIFIED MENU CLOSE LOGIC (Applies scroll unlock & history pop)
+// ==================================================
+function closeHamburgerMenu() {
+    /* Cleanly close the hamburger menu and restore page state. */
+    if (!navLinks) return;
+    
+    navLinks.classList.remove('active');
+    document.body.classList.remove('menu-open');
+    unlockScroll();
+    
+    // Reset Icon
+    const icon = hamburgerBtn.querySelector('i');
+    if (icon) {
+        icon.classList.add('fa-bars');
+        icon.classList.remove('fa-times');
+    }
+    
+    // Remove from modal stack (menu is treated as a "modal" state)
+    popModalState();
+}
 
 // ==================================================
 // 2. OPEN/CLOSE FUNCTIONS
@@ -21,6 +154,8 @@ const closeTeacher = document.getElementById("closeTeacher");
 function openParentForm() {
     if(parentModal) {
         parentModal.style.display = "block";
+        lockScroll(); /* Lock background scroll */
+        pushModalState('parent'); /* Push back button state */
         // Reset to show form (agar pehle submit kiya tha to wapas form dikhaye)
         document.getElementById("parentForm").style.display = "block";
         const successBox = document.getElementById("parentSuccess");
@@ -32,6 +167,8 @@ function openParentForm() {
 function openTeacherForm() {
     if(teacherModal) {
         teacherModal.style.display = "block";
+        lockScroll(); /* Lock background scroll */
+        pushModalState('teacher'); /* Push back button state */
         // Reset to show form
         document.getElementById("teacherForm").style.display = "block";
         document.getElementById("teacherPaymentIntro").style.display = "none";
@@ -45,27 +182,55 @@ function openTeacherForm() {
 
 // Open Callback Form
 function openCallbackForm() {
-    if(callbackModal) callbackModal.style.display = "block";
+    if(callbackModal) {
+        callbackModal.style.display = "block";
+        lockScroll(); /* Lock background scroll */
+        pushModalState('callback'); /* Push back button state */
+    }
 }
 
 // Close Callback Form
 function closeCallbackForm() {
-    if(callbackModal) callbackModal.style.display = "none";
+    if(callbackModal) {
+        callbackModal.style.display = "none";
+        unlockScroll(); /* Unlock background scroll */
+        popModalState(); /* Remove from modal stack */
+    }
 }
 
 // Close Logic (Clicking X)
 if(closeParent) {
-    closeParent.onclick = function() { parentModal.style.display = "none"; }
+    closeParent.onclick = function() {
+        parentModal.style.display = "none";
+        unlockScroll(); /* Unlock background scroll */
+        popModalState(); /* Remove from modal stack */
+    }
 }
 if(closeTeacher) {
-    closeTeacher.onclick = function() { teacherModal.style.display = "none"; }
+    closeTeacher.onclick = function() {
+        teacherModal.style.display = "none";
+        unlockScroll(); /* Unlock background scroll */
+        popModalState(); /* Remove from modal stack */
+    }
 }
 
 // Window Click (Outside Click to Close)
 window.onclick = function(event) {
-    if (event.target == parentModal) parentModal.style.display = "none";
-    if (event.target == teacherModal) teacherModal.style.display = "none";
-    if (event.target == callbackModal) callbackModal.style.display = "none";
+    if (event.target == parentModal) {
+        parentModal.style.display = "none";
+        unlockScroll(); /* Unlock background scroll */
+        popModalState(); /* Remove from modal stack */
+    }
+    if (event.target == teacherModal) {
+        teacherModal.style.display = "none";
+        unlockScroll(); /* Unlock background scroll */
+        popModalState(); /* Remove from modal stack */
+    }
+    if (event.target == callbackModal) {
+        callbackModal.style.display = "none";
+        unlockScroll(); /* Unlock background scroll */
+        popModalState(); /* Remove from modal stack */
+    }
 }
 
 // ==================================================
@@ -77,8 +242,6 @@ const zoneData = {
 };
 
 // Parent Form Zone Logic
-const parentCitySelect = document.getElementById('parentCitySelect');
-const parentZoneSelect = document.getElementById('parentZoneSelect');
 
 if(parentCitySelect && parentZoneSelect) {
     parentCitySelect.addEventListener('change', function() {
@@ -133,8 +296,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // Teacher Form Zone Logic
-const teacherCitySelect = document.getElementById('teacherCitySelect');
-const teacherZoneSelect = document.getElementById('teacherZoneSelect');
 
 if(teacherCitySelect && teacherZoneSelect) {
     teacherCitySelect.addEventListener('change', function() {
@@ -158,54 +319,9 @@ if(teacherCitySelect && teacherZoneSelect) {
 }
 
 // ==================================================
-// 4. FORM SUBMISSION LOGIC (Ye missing tha)
+// 4. FORM SUBMISSION LOGIC
+// Unified handler below wires up existing forms (see handler implementation further down).
 // ==================================================
-
-// --- A. Parent Form Submit (Show Social Links) ---
-const parentForm = document.getElementById('parentForm');
-const parentSuccess = document.getElementById('parentSuccess');
-
-if(parentForm) {
-    parentForm.addEventListener('submit', function(e) {
-        e.preventDefault(); // Page refresh hone se rokega
-        
-        // Hide Form
-        parentForm.style.display = 'none';
-        
-        // Show Success Box
-        if(parentSuccess) parentSuccess.style.display = 'block';
-        
-        // Scroll to top
-        const modalContent = document.querySelector('#parentModal .modal-content');
-        if(modalContent) modalContent.scrollTop = 0;
-    });
-}
-
-// --- B. Teacher Form Submit (Show Payment Intro) ---
-const teacherForm = document.getElementById('teacherForm');
-const teacherPaymentIntro = document.getElementById('teacherPaymentIntro');
-const teacherModalHeader = document.getElementById('teacherModalHeader');
-
-if(teacherForm) {
-    teacherForm.addEventListener('submit', function(e) {
-        e.preventDefault(); // Page refresh hone se rokega
-        
-        // Hide Form
-        teacherForm.style.display = 'none';
-        
-        // Show Comfort Screen
-        if(teacherPaymentIntro) teacherPaymentIntro.style.display = 'block';
-        
-        // Update Header
-        if(teacherModalHeader) {
-            teacherModalHeader.innerHTML = '<h2 style="text-align: center; color: var(--accent-color);">Almost There!</h2>';
-        }
-        
-        // Scroll to top
-        const modalContent = document.querySelector('#teacherModal .modal-content');
-        if(modalContent) modalContent.scrollTop = 0;
-    });
-}
 
 // --- C. Teacher "Proceed to Pay" Click (Show QR) ---
 function showQrCode() {
@@ -221,13 +337,6 @@ function showQrCode() {
         teacherModalHeader.innerHTML = '<h2 style="text-align: center; color: var(--accent-color);">Scan & Verify</h2>';
     }
 }
-
-
-
-
-
-
-
 
 // ==================================================
 // 5. EVENT LISTENERS (Buttons Click Logic)
@@ -248,15 +357,6 @@ const aboutDemoBtn = document.getElementById("aboutDemoBtn");
 if(aboutDemoBtn) {
     aboutDemoBtn.addEventListener('click', openParentForm);
 }
-
-
-
-
-
-
-
-
-
 
 // ==================================================
 // 6. TOGGLE LOGIC (Why Neo Shiksha Section)
@@ -292,7 +392,6 @@ function showTeachers() {
     if(contentParents) contentParents.style.display = 'none';
     if(contentTeachers) contentTeachers.style.display = 'flex';
 }
-
 
 // ==================================================
 // 7. NEW SECTION LOGIC: HOW IT WORKS & FAQs
@@ -338,10 +437,8 @@ faqQuestions.forEach(question => {
     });
 });
 
-
-
 // ==================================================
-// 8. MOBILE NAVBAR LOGIC (Hamburger & Scroll Lock)
+// 8. MOBILE NAVBAR LOGIC (Hamburger & Scroll Lock) — UPDATED
 // ==================================================
 const hamburgerBtn = document.getElementById('hamburgerBtn');
 const navLinks = document.getElementById('navLinks');
@@ -351,18 +448,22 @@ const navCta = document.querySelector('.btn-nav-cta'); // CTA button
 // Toggle Menu
 if(hamburgerBtn) {
     hamburgerBtn.addEventListener('click', () => {
-        navLinks.classList.toggle('active');
+        const isCurrentlyOpen = navLinks.classList.contains('active');
         
-        // Toggle Hamburger Icon (Bars <-> Times)
-        const icon = hamburgerBtn.querySelector('i');
-        if (navLinks.classList.contains('active')) {
+        if (!isCurrentlyOpen) {
+            // OPENING MENU
+            navLinks.classList.add('active');
+            document.body.classList.add('menu-open');
+            lockScroll(); /* Lock background scroll — NEW */
+            pushModalState('menu'); /* Push back button state — NEW */
+            
+            // Toggle Hamburger Icon (Bars → Times)
+            const icon = hamburgerBtn.querySelector('i');
             icon.classList.remove('fa-bars');
             icon.classList.add('fa-times');
-            document.body.classList.add('menu-open'); // Lock Scroll
         } else {
-            icon.classList.add('fa-bars');
-            icon.classList.remove('fa-times');
-            document.body.classList.remove('menu-open'); // Unlock Scroll
+            // CLOSING MENU
+            closeHamburgerMenu();
         }
     });
 }
@@ -371,13 +472,7 @@ if(hamburgerBtn) {
 navItems.forEach(item => {
     item.addEventListener('click', () => {
         if(navLinks.classList.contains('active')) {
-            navLinks.classList.remove('active');
-            document.body.classList.remove('menu-open');
-            
-            // Reset Icon
-            const icon = hamburgerBtn.querySelector('i');
-            icon.classList.add('fa-bars');
-            icon.classList.remove('fa-times');
+            closeHamburgerMenu();
         }
     });
 });
@@ -386,12 +481,119 @@ navItems.forEach(item => {
 if(navCta) {
     navCta.addEventListener('click', () => {
         if(navLinks.classList.contains('active')) {
-            navLinks.classList.remove('active');
-            document.body.classList.remove('menu-open');
-             // Reset Icon
-            const icon = hamburgerBtn.querySelector('i');
-            icon.classList.add('fa-bars');
-            icon.classList.remove('fa-times');
+            closeHamburgerMenu();
         }
     });
 }
+
+// ==================================================
+// Unified form submit handler (sends to Google Apps Script)
+// ==================================================
+async function handleFormSubmit(event, formType = 'Form', userType = 'Inquiry') {
+    event.preventDefault();
+    const form = event.target;
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalText = submitBtn ? submitBtn.innerHTML : null;
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = 'Submitting...';
+    }
+
+    // collect form data (multi-value keys become arrays)
+    const fd = new FormData(form);
+    const payload = {};
+    fd.forEach((value, key) => {
+        if (payload.hasOwnProperty(key)) {
+            if (!Array.isArray(payload[key])) payload[key] = [payload[key]];
+            payload[key].push(value);
+        } else {
+            payload[key] = value;
+        }
+    });
+
+    payload.source = 'Website';
+    payload.user_type = userType;
+    payload.form_type = formType;
+
+    // STANDARDIZE 'name' KEY FOR BACKEND
+    // Priority: parentName -> teacherName -> name
+    (function normalizeNameKey(obj) {
+        const candidates = ['parentName', 'teacherName', 'name'];
+        for (const k of candidates) {
+            if (obj[k]) {
+                obj.name = obj[k];
+                break;
+            }
+        }
+        // remove redundant keys if present
+        if (obj.parentName) delete obj.parentName;
+        if (obj.teacherName) delete obj.teacherName;
+    })(payload);
+
+    try {
+        // Google Apps Script often requires mode:'no-cors' for simple POSTs from static pages.
+        await fetch(SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        // Treat as success (no-cors responses are opaque)
+        form.reset();
+
+        // Close parent modal if inside one
+        const modalRoot = form.closest('.modal');
+        if (modalRoot) modalRoot.style.display = 'none';
+        unlockScroll();
+        popModalState();
+
+        alert('Thank you! We will contact you soon.');
+    } catch (err) {
+        console.error('Form submit error:', err);
+        alert('Something went wrong. Please try again.');
+    } finally {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+        }
+    }
+}
+
+// --------------------------------------------------
+// Replace existing submit handlers with unified handler
+// --------------------------------------------------
+
+// Parent Form wiring
+if (parentForm) {
+    // remove any inline/older handlers (safe guard)
+    parentForm.onsubmit = null;
+    parentForm.addEventListener('submit', (e) => handleFormSubmit(e, 'ParentForm', 'Parent'));
+}
+
+// Teacher Form wiring
+if (teacherForm) {
+    teacherForm.onsubmit = null;
+    teacherForm.addEventListener('submit', (e) => handleFormSubmit(e, 'TeacherForm', 'Teacher'));
+}
+
+// Callback Form wiring (defaults to Inquiry)
+if (callbackForm) {
+    callbackForm.onsubmit = null;
+    callbackForm.addEventListener('submit', (e) => handleFormSubmit(e, 'CallbackForm', 'Inquiry'));
+}
+
+// ==================================================
+// Smart URL param handling: open modals via ?open=parent|teacher|callback
+// ==================================================
+document.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    const open = params.get('open');
+    if (open === 'parent') {
+        openParentForm(); // [`openParentForm`](script.js)
+    } else if (open === 'teacher') {
+        openTeacherForm(); // [`openTeacherForm`](script.js)
+    } else if (open === 'callback') {
+        openCallbackForm(); // [`openCallbackForm`](script.js)
+    }
+});
