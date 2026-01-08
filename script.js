@@ -29,6 +29,12 @@ const teacherZoneSelect = document.getElementById('teacherZoneSelect');
 
 const callbackForm = document.getElementById('callbackForm');
 
+// Navigation elements (declared here to avoid ReferenceError in isMenuOpen)
+const hamburgerBtn = document.getElementById('hamburgerBtn');
+const navLinks = document.getElementById('navLinks');
+const navItems = document.querySelectorAll('.nav-item');
+const navCta = document.querySelector('.btn-nav-cta');
+
 // Scroll lock helpers (preserve/restore page scroll position)
 let __savedScrollY = 0;
 function lockScroll() {
@@ -174,9 +180,9 @@ function openTeacherForm() {
         document.getElementById("teacherPaymentIntro").style.display = "none";
         document.getElementById("paymentSection").style.display = "none";
         
-        // Reset Header
+        // Reset Header (Form screen: heading only, no sub-copy)
         const header = document.getElementById("teacherModalHeader");
-        if(header) header.innerHTML = '<h2 style="text-align: center; margin-bottom: 10px;">Join <span class="text-accent">Neo Shiksha</span></h2><p style="text-align: center; color: #aaa; font-size: 0.9rem; margin-bottom: 20px;">Fill the form below to start your verification process.</p>';
+        if(header) header.innerHTML = '<h2 style="text-align: center; margin-bottom: 10px;">Join <span class="text-accent">Neo Shiksha</span></h2>';
     }
 }
 
@@ -332,9 +338,9 @@ function showQrCode() {
     const paymentSection = document.getElementById('paymentSection');
     if(paymentSection) paymentSection.style.display = 'block';
     
-    // Update Header
+    // Update Header (Payment screen: heading + payment copy)
     if(teacherModalHeader) {
-        teacherModalHeader.innerHTML = '<h2 style="text-align: center; color: var(--accent-color);">Scan & Verify</h2>';
+        teacherModalHeader.innerHTML = '<h2 style="text-align: center; margin-bottom: 10px;">Join <span class="text-accent">Neo Shiksha</span></h2><p style="text-align: center; color: #aaa; font-size: 0.9rem; margin-bottom: 30px;">Good teaching, done consistently, leads to better income here.</p>';
     }
 }
 
@@ -356,6 +362,169 @@ if(heroTeacherBtn) {
 const aboutDemoBtn = document.getElementById("aboutDemoBtn");
 if(aboutDemoBtn) {
     aboutDemoBtn.addEventListener('click', openParentForm);
+}
+
+// Transition Continue wiring: show existing payment intro when user continues
+const teacherTransitionContinue = document.getElementById('teacherTransitionContinue');
+const teacherTransition = document.getElementById('teacherTransition');
+if (teacherTransitionContinue) {
+    teacherTransitionContinue.addEventListener('click', () => {
+        if (teacherTransition) teacherTransition.style.display = 'none';
+        // Skip the intermediate intro and directly open the final payment (QR + WhatsApp)
+        showQrCode();
+    });
+}
+
+// Payment helper dismiss functionality
+const paymentHelper = document.getElementById('paymentHelper');
+const paymentHelperClose = document.getElementById('paymentHelperClose');
+
+// Dismiss helper and remember closure for this session
+if (paymentHelperClose) {
+    paymentHelperClose.addEventListener('click', () => {
+        if (paymentHelper) paymentHelper.style.display = 'none';
+        try { sessionStorage.setItem('paymentHelperClosed', 'true'); } catch (e) {}
+    });
+}
+
+// Show QR Button: Toggle QR visibility on mobile
+const showQrBtn = document.getElementById('showQrBtn');
+const qrContainer = document.getElementById('qrContainer');
+const qrHelperText = document.getElementById('qrHelperText');
+const whatsappPaymentBtn = document.getElementById('whatsappPaymentBtn');
+
+// Trigger subtle attention on WhatsApp CTA (blink border 2–3 times)
+function triggerWhatsappAttention() {
+    if (!whatsappPaymentBtn) return;
+    // Restart animation if already applied
+    whatsappPaymentBtn.classList.remove('whatsapp-attention');
+    // Force reflow to allow re-adding class to restart animation
+    void whatsappPaymentBtn.offsetWidth;
+    whatsappPaymentBtn.classList.add('whatsapp-attention');
+    // Remove class after animation completes (0.9s x 3 iterations)
+    setTimeout(() => {
+        whatsappPaymentBtn.classList.remove('whatsapp-attention');
+    }, 2700);
+}
+
+if (showQrBtn) {
+    showQrBtn.addEventListener('click', () => {
+        // Toggle visibility classes
+        if (qrContainer) qrContainer.classList.toggle('visible-mobile');
+        if (qrHelperText) qrHelperText.classList.toggle('visible-mobile');
+        
+        // Toggle active state for button styling
+        showQrBtn.classList.toggle('qr-active');
+        
+        // Update button text based on visibility state
+        if (qrContainer && qrContainer.classList.contains('visible-mobile')) {
+            showQrBtn.textContent = 'Hide QR Code';
+            // Draw attention to WhatsApp after revealing QR
+            triggerWhatsappAttention();
+        } else {
+            showQrBtn.textContent = 'Show QR Code';
+        }
+    });
+}
+
+// Copy UPI Number - Mobile-optimized with trusted gesture + iOS fallback
+function initCopyButton() {
+    const copyUpiBtn = document.getElementById('copyUpiBtn');
+    const copyConfirmation = document.getElementById('copyConfirmation');
+    
+    if (!copyUpiBtn) {
+        console.warn('Copy button not found in DOM');
+        return;
+    }
+
+    // Single click event - works on desktop and mobile (maintains trusted gesture)
+    copyUpiBtn.addEventListener('click', function() {
+        const upiNumber = '9555577801';
+        
+        // Try modern clipboard API first (Android Chrome, desktop)
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(upiNumber)
+                .then(() => {
+                    showCopySuccess();
+                })
+                .catch(() => {
+                    // Fallback for iOS Safari and restricted contexts
+                    fallbackCopy(upiNumber);
+                });
+        } else {
+            // Older browsers or restricted context - use fallback
+            fallbackCopy(upiNumber);
+        }
+        
+        function showCopySuccess() {
+            // Show confirmation message
+            if (copyConfirmation) {
+                copyConfirmation.style.display = 'block';
+                setTimeout(() => {
+                    copyConfirmation.style.display = 'none';
+                }, 3000);
+            }
+            
+            // Update button text temporarily
+            const originalText = copyUpiBtn.innerHTML;
+            copyUpiBtn.innerHTML = '<span>✓</span><span>Copied</span>';
+            copyUpiBtn.style.color = '#25D366';
+            copyUpiBtn.style.borderColor = '#25D366';
+            
+            setTimeout(() => {
+                copyUpiBtn.innerHTML = originalText;
+                copyUpiBtn.style.color = 'var(--accent-color)';
+                copyUpiBtn.style.borderColor = 'var(--accent-color)';
+            }, 2000);
+
+            // Nudge attention to WhatsApp CTA
+            triggerWhatsappAttention();
+        }
+        
+        function fallbackCopy(text) {
+            try {
+                // Create temporary input element
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.value = text;
+                input.style.position = 'fixed';
+                input.style.top = '-9999px';
+                input.style.left = '-9999px';
+                
+                document.body.appendChild(input);
+                input.select();
+                input.setSelectionRange(0, 99999); // For mobile
+                
+                // Execute copy command
+                const success = document.execCommand('copy');
+                
+                // Clean up
+                document.body.removeChild(input);
+                
+                if (success) {
+                    showCopySuccess();
+                } else {
+                    throw new Error('execCommand copy failed');
+                }
+            } catch (err) {
+                console.error('Fallback copy failed:', err);
+                if (copyConfirmation) {
+                    copyConfirmation.textContent = 'Failed to copy. Please try again.';
+                    copyConfirmation.style.display = 'block';
+                    setTimeout(() => {
+                        copyConfirmation.style.display = 'none';
+                    }, 3000);
+                }
+            }
+        }
+    });
+}
+
+// Initialize copy button when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCopyButton);
+} else {
+    initCopyButton();
 }
 
 // ==================================================
@@ -440,11 +609,6 @@ faqQuestions.forEach(question => {
 // ==================================================
 // 8. MOBILE NAVBAR LOGIC (Hamburger & Scroll Lock) — UPDATED
 // ==================================================
-const hamburgerBtn = document.getElementById('hamburgerBtn');
-const navLinks = document.getElementById('navLinks');
-const navItems = document.querySelectorAll('.nav-item'); // All links inside nav
-const navCta = document.querySelector('.btn-nav-cta'); // CTA button
-
 // Toggle Menu
 if(hamburgerBtn) {
     hamburgerBtn.addEventListener('click', () => {
@@ -542,13 +706,31 @@ async function handleFormSubmit(event, formType = 'Form', userType = 'Inquiry') 
         // Treat as success (no-cors responses are opaque)
         form.reset();
 
-        // Close parent modal if inside one
-        const modalRoot = form.closest('.modal');
-        if (modalRoot) modalRoot.style.display = 'none';
-        unlockScroll();
-        popModalState();
+        // If this is the Teacher form, keep the teacher modal open and
+        // transition to the intermediate screen instead of closing the modal.
+        if (formType === 'TeacherForm' || userType === 'Teacher') {
+            // Keep modal open (do not call unlockScroll/popModalState)
+            // Hide the form and any payment screens, then show the transition
+            try {
+                if (form) form.style.display = 'none';
+                if (teacherPaymentIntro) teacherPaymentIntro.style.display = 'none';
+                const paymentSection = document.getElementById('paymentSection');
+                if (paymentSection) paymentSection.style.display = 'none';
 
-        alert('Thank you! We will contact you soon.');
+                const trans = document.getElementById('teacherTransition');
+                if (trans) trans.style.display = 'block';
+            } catch (e) {
+                console.warn('Teacher flow transition error', e);
+            }
+        } else {
+            // Default behavior for other forms: close modal and restore scroll
+            const modalRoot = form.closest('.modal');
+            if (modalRoot) modalRoot.style.display = 'none';
+            unlockScroll();
+            popModalState();
+
+            alert('Thank you! We will contact you soon.');
+        }
     } catch (err) {
         console.error('Form submit error:', err);
         alert('Something went wrong. Please try again.');
@@ -597,3 +779,37 @@ document.addEventListener('DOMContentLoaded', () => {
         openCallbackForm(); // [`openCallbackForm`](script.js)
     }
 });
+
+function handleFormSubmit(e, formType) {
+    e.preventDefault();
+    
+    if (formType === 'ParentForm') {
+        // ...existing parent form logic...
+        document.getElementById('parentForm').style.display = 'none';
+        document.getElementById('parentSuccess').style.display = 'block';
+    } 
+    else if (formType === 'TeacherForm') {
+        // Teacher form: show the transition card (informational) first,
+        // then user will continue to the payment screen via the Continue button.
+        document.getElementById('teacherForm').style.display = 'none';
+
+        // Ensure any payment intro/section is hidden for a clean transition
+        const paymentIntro = document.getElementById('teacherPaymentIntro');
+        if (paymentIntro) paymentIntro.style.display = 'none';
+        const paymentSection = document.getElementById('paymentSection');
+        if (paymentSection) paymentSection.style.display = 'none';
+
+        // Update header with transition copy
+        const header = document.getElementById('teacherModalHeader');
+        if (header) header.innerHTML = '<h2 style="text-align: center; margin-bottom: 10px;">Join <span class="text-accent">Neo Shiksha</span></h2><p style="text-align: center; color: #aaa; font-size: 0.9rem; margin-bottom: 20px;">You\'re about to join a growing circle of teachers who are building stable, respectable incomes through consistent, honest work.</p>';
+
+        // Show the approved transition panel
+        const trans = document.getElementById('teacherTransition');
+        if (trans) trans.style.display = 'block';
+    }
+    else if (formType === 'CallbackForm') {
+        // ...existing callback form logic...
+        document.getElementById('callbackForm').style.display = 'none';
+        document.getElementById('callbackSuccess').style.display = 'block';
+    }
+}
