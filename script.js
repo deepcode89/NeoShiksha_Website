@@ -13,7 +13,7 @@ const closeParent = document.getElementById("closeParent");
 const closeTeacher = document.getElementById("closeTeacher");
 
 // NEW: backend script URL (paste your deployed Apps Script URL here)
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbylG9MdHEZkTBXaMKO03Bts-EJfcDSLm-c8AUnev8O4Ii7T8SE57b_c5D9v-eLiBKeV0Q/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby9BQHjcAYq4d1ZjO_lj4Db8iUZFBvaGPC-NuBc_3uJCYsgeq7Eh6-mMqw7I0eKM96XEQ/exec';
 
 /* Consolidated DOM references (forms, selects, buttons) - declared once */
 const parentForm = document.getElementById('parentForm');
@@ -192,6 +192,18 @@ function openCallbackForm() {
         callbackModal.style.display = "block";
         lockScroll(); /* Lock background scroll */
         pushModalState('callback'); /* Push back button state */
+        
+        // FIX: Reset visibility states AND clear form inputs
+        const mainContent = document.getElementById("callbackMainContent");
+        const form = document.getElementById("callbackForm");
+        const success = document.getElementById("callbackSuccess");
+        
+        if(mainContent) mainContent.style.display = "block";
+        if(form) {
+            form.style.display = "block";
+            form.reset(); /* Clear all input fields */
+        }
+        if(success) success.style.display = "none";
     }
 }
 
@@ -427,6 +439,14 @@ if (showQrBtn) {
     });
 }
 
+// Mobile QR preference link: Reuse existing QR toggle logic
+const preferQrLink = document.getElementById('preferQrLink');
+if (preferQrLink && showQrBtn) {
+    preferQrLink.addEventListener('click', () => {
+        showQrBtn.click(); // Trigger same toggle as the button
+    });
+}
+
 // Copy UPI Number - Mobile-optimized with trusted gesture + iOS fallback
 function initCopyButton() {
     const copyUpiBtn = document.getElementById('copyUpiBtn');
@@ -457,13 +477,7 @@ function initCopyButton() {
         }
         
         function showCopySuccess() {
-            // Show confirmation message
-            if (copyConfirmation) {
-                copyConfirmation.style.display = 'block';
-                setTimeout(() => {
-                    copyConfirmation.style.display = 'none';
-                }, 3000);
-            }
+            // Show button feedback only (no toast message)
             
             // Update button text temporarily
             const originalText = copyUpiBtn.innerHTML;
@@ -508,13 +522,7 @@ function initCopyButton() {
                 }
             } catch (err) {
                 console.error('Fallback copy failed:', err);
-                if (copyConfirmation) {
-                    copyConfirmation.textContent = 'Failed to copy. Please try again.';
-                    copyConfirmation.style.display = 'block';
-                    setTimeout(() => {
-                        copyConfirmation.style.display = 'none';
-                    }, 3000);
-                }
+                // Silent fail - no error message shown to user
             }
         }
     });
@@ -658,12 +666,21 @@ async function handleFormSubmit(event, formType = 'Form', userType = 'Inquiry') 
     const form = event.target;
     const submitBtn = form.querySelector('button[type="submit"]');
     const originalText = submitBtn ? submitBtn.innerHTML : null;
+    
+    // UI: Show loading state
     if (submitBtn) {
         submitBtn.disabled = true;
         submitBtn.innerHTML = 'Submitting...';
     }
 
-    // collect form data (multi-value keys become arrays)
+    // SPECIAL LOGIC: Callback User Type
+    if (formType === 'CallbackForm') {
+        const selectedRadio = event.target.querySelector('input[name="callbackUserType"]:checked');
+        if (selectedRadio) userType = selectedRadio.value;
+        console.log("📞 Callback User Type Selected:", userType);
+    }
+
+    // Data collection
     const fd = new FormData(form);
     const payload = {};
     fd.forEach((value, key) => {
@@ -679,23 +696,25 @@ async function handleFormSubmit(event, formType = 'Form', userType = 'Inquiry') 
     payload.user_type = userType;
     payload.form_type = formType;
 
-    // STANDARDIZE 'name' KEY FOR BACKEND
-    // Priority: parentName -> teacherName -> name
-    (function normalizeNameKey(obj) {
-        const candidates = ['parentName', 'teacherName', 'name'];
-        for (const k of candidates) {
-            if (obj[k]) {
-                obj.name = obj[k];
-                break;
-            }
+    // Normalize name key
+    if (payload.parentName) { payload.name = payload.parentName; delete payload.parentName; }
+    if (payload.teacherName) { payload.name = payload.teacherName; delete payload.teacherName; }
+
+    // Handle "All Subjects" toggle: if selected, keep only "All Subjects" and remove individual subjects
+    if (payload.allSubjects && payload.subjects) {
+        // If "All Subjects" is checked, replace subjects array with just ["All Subjects"]
+        if (Array.isArray(payload.subjects)) {
+            payload.subjects = ['All Subjects'];
+        } else {
+            payload.subjects = ['All Subjects'];
         }
-        // remove redundant keys if present
-        if (obj.parentName) delete obj.parentName;
-        if (obj.teacherName) delete obj.teacherName;
-    })(payload);
+        delete payload.allSubjects; // Remove the allSubjects field from payload
+    } else if (payload.allSubjects) {
+        // If only allSubjects is set (no individual subjects selected, which shouldn't happen)
+        delete payload.allSubjects;
+    }
 
     try {
-        // Google Apps Script often requires mode:'no-cors' for simple POSTs from static pages.
         await fetch(SCRIPT_URL, {
             method: 'POST',
             mode: 'no-cors',
@@ -703,34 +722,46 @@ async function handleFormSubmit(event, formType = 'Form', userType = 'Inquiry') 
             body: JSON.stringify(payload)
         });
 
-        // Treat as success (no-cors responses are opaque)
+        // SUCCESS: Reset form
         form.reset();
 
-        // If this is the Teacher form, keep the teacher modal open and
-        // transition to the intermediate screen instead of closing the modal.
+        // UI UPDATES BASED ON FORM TYPE
         if (formType === 'TeacherForm' || userType === 'Teacher') {
-            // Keep modal open (do not call unlockScroll/popModalState)
-            // Hide the form and any payment screens, then show the transition
-            try {
-                if (form) form.style.display = 'none';
-                if (teacherPaymentIntro) teacherPaymentIntro.style.display = 'none';
-                const paymentSection = document.getElementById('paymentSection');
-                if (paymentSection) paymentSection.style.display = 'none';
+            // Teacher Logic: Show transition screen
+            if (form) form.style.display = 'none';
+            const paymentIntro = document.getElementById('teacherPaymentIntro');
+            if (paymentIntro) paymentIntro.style.display = 'none';
+            const paymentSection = document.getElementById('paymentSection');
+            if (paymentSection) paymentSection.style.display = 'none';
+            
+            const trans = document.getElementById('teacherTransition');
+            if (trans) trans.style.display = 'block';
 
-                const trans = document.getElementById('teacherTransition');
-                if (trans) trans.style.display = 'block';
-            } catch (e) {
-                console.warn('Teacher flow transition error', e);
-            }
+        } else if (formType === 'ParentForm') {
+            // Parent Logic: Hide form, show success
+            const pForm = document.getElementById('parentForm');
+            const pSuccess = document.getElementById('parentSuccess');
+            if (pForm) pForm.style.display = 'none';
+            if (pSuccess) pSuccess.style.display = 'block';
+
+        } else if (formType === 'CallbackForm') {
+            // Callback Logic: Hide header + form wrapper, show success
+            const mainContent = document.getElementById('callbackMainContent');
+            if (mainContent) mainContent.style.display = 'none'; 
+
+            // Show success message
+            const cSuccess = document.getElementById('callbackSuccess');
+            if (cSuccess) cSuccess.style.display = 'block';
+            
         } else {
-            // Default behavior for other forms: close modal and restore scroll
+            // Fallback (Generic Close)
+            alert('Thank you! We will contact you soon.');
             const modalRoot = form.closest('.modal');
             if (modalRoot) modalRoot.style.display = 'none';
             unlockScroll();
             popModalState();
-
-            alert('Thank you! We will contact you soon.');
         }
+
     } catch (err) {
         console.error('Form submit error:', err);
         alert('Something went wrong. Please try again.');
@@ -748,7 +779,6 @@ async function handleFormSubmit(event, formType = 'Form', userType = 'Inquiry') 
 
 // Parent Form wiring
 if (parentForm) {
-    // remove any inline/older handlers (safe guard)
     parentForm.onsubmit = null;
     parentForm.addEventListener('submit', (e) => handleFormSubmit(e, 'ParentForm', 'Parent'));
 }
@@ -758,6 +788,9 @@ if (teacherForm) {
     teacherForm.onsubmit = null;
     teacherForm.addEventListener('submit', (e) => handleFormSubmit(e, 'TeacherForm', 'Teacher'));
 }
+
+// "All Subjects" is an independent option for generalist teachers.
+// No auto-selection logic needed — it works like any other checkbox.
 
 // Callback Form wiring (defaults to Inquiry)
 if (callbackForm) {
@@ -769,47 +802,156 @@ if (callbackForm) {
 // Smart URL param handling: open modals via ?open=parent|teacher|callback
 // ==================================================
 document.addEventListener('DOMContentLoaded', () => {
-    const params = new URLSearchParams(window.location.search);
-    const open = params.get('open');
-    if (open === 'parent') {
-        openParentForm(); // [`openParentForm`](script.js)
-    } else if (open === 'teacher') {
-        openTeacherForm(); // [`openTeacherForm`](script.js)
-    } else if (open === 'callback') {
-        openCallbackForm(); // [`openCallbackForm`](script.js)
+    // Check URL parameters to auto-open forms
+    // Supports both hash-based (#parent-form, #teacher-form) and query params (?open=parent)
+    
+    let formToOpen = null;
+    
+    // First check hash-based URLs (cleaner for sharing on WhatsApp)
+    if (window.location.hash === '#parent-form') {
+        formToOpen = 'parent';
+    } else if (window.location.hash === '#teacher-form') {
+        formToOpen = 'teacher';
+    } else {
+        // Fall back to query parameters (?open=parent, ?open=teacher)
+        const params = new URLSearchParams(window.location.search);
+        const open = params.get('open');
+        if (open === 'parent' || open === 'teacher' || open === 'callback') {
+            formToOpen = open;
+        }
+    }
+    
+    // Auto-open the form if a valid parameter was found
+    if (formToOpen === 'parent') {
+        openParentForm();
+    } else if (formToOpen === 'teacher') {
+        openTeacherForm();
+    } else if (formToOpen === 'callback') {
+        openCallbackForm();
     }
 });
 
-function handleFormSubmit(e, formType) {
-    e.preventDefault();
+function doPost(e) {
+  var lock = LockService.getScriptLock();
+  var lockAcquired = false;
+  
+  try {
+    lockAcquired = lock.tryLock(10000);
+
+    var doc = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = doc.getSheetByName('MASTER_DATA');
+
+    // approvedHeaders is used ONLY for first-time sheet creation (fallback default).
+    // After creation, mapping relies entirely on live sheet headers from row 1.
+    var approvedHeaders = [
+      'Timestamp', 'Source', 'User_Type', 'Name', 'Phone', 'City', 'Zone', 'Locality', 'Pincode',
+      'Gender_Info', 'Qualification', 'Experience', 'Subject', 'Class', 'Board', 'Status', 'Full_JSON_Data'
+    ];
+
+    // Create sheet with approved headers if it doesn't exist
+    if (!sheet) {
+      sheet = doc.insertSheet('MASTER_DATA');
+      sheet.appendRow(approvedHeaders);
+    }
+
+    // Parse incoming payload
+    var requestBody = e.postData.contents;
+    var data = JSON.parse(requestBody);
+
+    // Read headers dynamically from row 1 (case-sensitive)
+    var headerRow = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+    var headerMap = {}; // Maps header name to column index (0-based)
+    for (var i = 0; i < headerRow.length; i++) {
+      headerMap[headerRow[i]] = i;
+    }
+
+    // Create new row array with same length as current headers
+    var newRow = new Array(headerRow.length);
+
+    // Helper: Set value in row by header name (case-sensitive, exact match)
+    function setRowValueByHeader(headerName, value) {
+      if (headerName in headerMap) {
+        newRow[headerMap[headerName]] = (value !== undefined && value !== null) ? value : '';
+      }
+    }
+
+    // ========== SERVER-SIDE TIMESTAMP ==========
+    setRowValueByHeader('Timestamp', new Date());
+
+    // ========== SOURCE ==========
+    setRowValueByHeader('Source', data.source || 'Web');
+
+    // ========== USER_TYPE NORMALIZATION (CRITICAL BUSINESS RULE) ==========
+    // If form_type is "CallbackForm", override user_type with Callback_Parent or Callback_Teacher
+    var userType = data.user_type || '';
+    if (data.form_type === 'CallbackForm' && data.callbackUserType) {
+      if (data.callbackUserType === 'Parent') {
+        userType = 'Callback_Parent';
+      } else if (data.callbackUserType === 'Teacher') {
+        userType = 'Callback_Teacher';
+      }
+    }
+    setRowValueByHeader('User_Type', userType);
+
+    // ========== NAME NORMALIZATION ==========
+    // Try multiple sources in order of priority
+    var finalName = data.name || data.teacherName || data.parentName || '';
+    setRowValueByHeader('Name', finalName);
+
+    // ========== FIELD MAPPINGS (payload field → sheet header) ==========
+    // Maps single-value fields only; arrays are left blank and stored in Full_JSON_Data.
+    // Note: 'class' (scalar, ParentForm) is mapped to Class header; 'classes' (array, TeacherForm) is intentionally skipped.
+    var fieldMappings = {
+      'phone': 'Phone',
+      'city': 'City',
+      'zone': 'Zone',
+      'locality': 'Locality',
+      'pincode': 'Pincode',
+      'gender': 'Gender_Info',
+      'qualification': 'Qualification',
+      'experience': 'Experience',
+      'board': 'Board',
+      'class': 'Class'
+    };
+
+    // Apply field mappings (case-sensitive)
+    for (var payloadField in fieldMappings) {
+      if (payloadField in data) {
+        var headerName = fieldMappings[payloadField];
+        var value = data[payloadField];
+        
+        // Skip arrays; they are included in Full_JSON_Data only
+        if (Array.isArray(value)) {
+          continue;
+        }
+        
+        setRowValueByHeader(headerName, value);
+      }
+    }
+
+    // ========== STATUS (SERVER-SIDE DEFAULT) ==========
+    setRowValueByHeader('Status', 'New');
+
+    // ========== FULL_JSON_DATA (COMPLETE RAW PAYLOAD) ==========
+    // Stores entire payload as stringified JSON, including arrays, metadata, and all fields
+    setRowValueByHeader('Full_JSON_Data', JSON.stringify(data));
+
+    // Append the row to the sheet
+    sheet.appendRow(newRow);
+    SpreadsheetApp.flush();
     
-    if (formType === 'ParentForm') {
-        // ...existing parent form logic...
-        document.getElementById('parentForm').style.display = 'none';
-        document.getElementById('parentSuccess').style.display = 'block';
-    } 
-    else if (formType === 'TeacherForm') {
-        // Teacher form: show the transition card (informational) first,
-        // then user will continue to the payment screen via the Continue button.
-        document.getElementById('teacherForm').style.display = 'none';
-
-        // Ensure any payment intro/section is hidden for a clean transition
-        const paymentIntro = document.getElementById('teacherPaymentIntro');
-        if (paymentIntro) paymentIntro.style.display = 'none';
-        const paymentSection = document.getElementById('paymentSection');
-        if (paymentSection) paymentSection.style.display = 'none';
-
-        // Update header with transition copy
-        const header = document.getElementById('teacherModalHeader');
-        if (header) header.innerHTML = '<h2 style="text-align: center; margin-bottom: 10px;">Join <span class="text-accent">Neo Shiksha</span></h2><p style="text-align: center; color: #aaa; font-size: 0.9rem; margin-bottom: 20px;">You\'re about to join a growing circle of teachers who are building stable, respectable incomes through consistent, honest work.</p>';
-
-        // Show the approved transition panel
-        const trans = document.getElementById('teacherTransition');
-        if (trans) trans.style.display = 'block';
+    if (lockAcquired) {
+      lock.releaseLock();
     }
-    else if (formType === 'CallbackForm') {
-        // ...existing callback form logic...
-        document.getElementById('callbackForm').style.display = 'none';
-        document.getElementById('callbackSuccess').style.display = 'block';
+
+    return ContentService.createTextOutput(JSON.stringify({ result: 'success' }))
+      .setMimeType(ContentService.MimeType.JSON);
+
+  } catch (err) {
+    if (lockAcquired) {
+      lock.releaseLock();
     }
+    return ContentService.createTextOutput(JSON.stringify({ result: 'error', error: err.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
 }

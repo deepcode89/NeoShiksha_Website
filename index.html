@@ -20,8 +20,13 @@
             <span class="brand-tagline">Serving Since 2010</span>
         </a>
 
-        <div class="hamburger" id="hamburgerBtn">
-            <i class="fas fa-bars"></i>
+        <div class="nav-mobile-actions">
+            <button class="btn-mobile-callback" onclick="openCallbackForm()" aria-label="Request a callback">
+                Request Callback
+            </button>
+            <div class="hamburger" id="hamburgerBtn">
+                <i class="fas fa-bars"></i>
+            </div>
         </div>
 
         <ul class="nav-links" id="navLinks">
@@ -51,7 +56,7 @@
             </h1>
             
             <p class="hero-desc">
-                Redefining Home Tuitions in Delhi. A space where mentorship meets transparency. 
+                Redefining Home Tuitions in Delhi and Tricity. A space where mentorship meets transparency. 
                 Whether you are a parent seeking a verified guide or a teacher looking for 
                 100% of your hard-earned fee—you are home.
             </p>
@@ -504,10 +509,11 @@
                 <div class="footer-col">
                     <h3>Quick Links</h3>
                     <ul>
-                        <li><a href="#">Home</a></li>
-                        <li><a href="#">About Mentor</a></li>
-                        <li><a href="#">For Parents</a></li>
-                        <li><a href="#">Join as Teacher</a></li>
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#about">About Us</a></li>
+                        <li><a href="#parents">For Parents</a></li>
+                        <li><a href="#teachers">For Teachers</a></li>
+                        <li><a href="#faq">FAQs</a></li>
                     </ul>
                 </div>
 
@@ -515,7 +521,7 @@
                     <h3>Contact Us</h3>
                     <p>📍 East Delhi, India</p>
                     <p>📞 +91 9555577881, 9555577801</p>
-                    <p>📧 neoshikshaacademy@gmail.com</p>
+                    <p><i class="fas fa-envelope"></i> neoshikshaacademy@gmail.com</p>
                 </div>
 
                 <div class="footer-col">
@@ -526,6 +532,9 @@
                         </a>
                         <a href="https://www.instagram.com/neoshiksha" target="_blank" class="social-btn insta">
                             <i class="fab fa-instagram"></i>  Instagram
+                        </a>
+                        <a href="https://wa.me/919555577881" target="_blank" class="social-btn whatsapp">
+                            <i class="fab fa-whatsapp"></i>  WhatsApp
                         </a>
                     </div>
                 </div>
@@ -682,15 +691,36 @@
         <div class="modal-content small-modal">
             <span class="close-btn" onclick="closeCallbackForm()">&times;</span>
             
-            <h2>Request a <span class="text-accent">Call Back</span></h2>
-            <p style="color:#ccc; margin-bottom:15px;">Share your number, and our counselor will call you within 24 hours.</p>
-            
-            <form id="callbackForm">
-                <input type="text" name="name" placeholder="Your Name" required class="dark-input">
-                <input type="tel" name="phone" placeholder="WhatsApp Number" required class="dark-input">
+            <div id="callbackMainContent">
+                <h2>Request a <span class="text-accent">Call Back</span></h2>
+                <p style="color:#ccc; margin-bottom:15px;">Share your number, and our counselor will call you within 24 hours.</p>
                 
-                <button type="submit" class="btn-primary full-width">Call Me Back</button>
-            </form>
+                <form id="callbackForm">
+                    <input type="text" name="name" placeholder="Your Name" required class="dark-input">
+                    
+                    <div class="input-group" style="margin-bottom: 15px; text-align: left;">
+                        <label style="display: block; color: #ccc; margin-bottom: 8px; font-size: 0.9rem;">I am a:</label>
+                        <div style="display: flex; gap: 20px;">
+                            <label style="cursor: pointer; display: flex; align-items: center; gap: 8px; color: #fff; font-size: 0.95rem;">
+                                <input type="radio" name="callbackUserType" value="Parent" checked style="accent-color: var(--accent-color); width: 18px; height: 18px;"> Parent
+                            </label>
+                            <label style="cursor: pointer; display: flex; align-items: center; gap: 8px; color: #fff; font-size: 0.95rem;">
+                                <input type="radio" name="callbackUserType" value="Teacher" style="accent-color: var(--accent-color); width: 18px; height: 18px;"> Teacher
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <input type="tel" name="phone" placeholder="WhatsApp Number" required class="dark-input">
+                    
+                    <button type="submit" class="btn-primary full-width">Call Me Back</button>
+                </form>
+            </div>
+
+            <div id="callbackSuccess" class="success-box" style="display: none; padding: 20px 0;">
+                <span class="success-icon" style="font-size: 40px;">✅</span>
+                <h3 class="success-title" style="font-size: 1.2rem;">Request Received!</h3>
+                <p class="success-desc" style="font-size: 0.9rem;">We will call you within 24 hours.</p>
+            </div>
         </div>
     </div>
 
@@ -783,6 +813,9 @@
 
                         <label class="input-label" style="margin-top:10px;">Subjects (Select Multiple):</label>
                         <div class="checkbox-container">
+                            <!-- Independent Option: Generalist Teachers -->
+                            <label><input type="checkbox" id="selectAllSubjects" name="allSubjects" value="All Subjects"> All Subjects (Primary & Middle)</label>
+                            
                             <label><input type="checkbox" name="subjects" value="Maths"> Maths</label>
                             <label><input type="checkbox" name="subjects" value="Science"> Science</label>
                             <label><input type="checkbox" name="subjects" value="English"> English</label>
@@ -802,7 +835,7 @@
                     </div> 
                 </div> 
                 <button type="submit" class="btn-primary full-width" style="margin-top: 20px; font-size: 1.1rem;">
-                    Proceed to Payment
+                    Submit
                 </button>
             </form>
 
@@ -851,43 +884,80 @@
                     </h3>
                 </div>
 
-                <!-- Payment Number Section -->
-                <p style="color: #ccc; font-size: 0.9rem; margin-bottom: 8px; font-weight: 500;">
-                    Pay ₹99 on the number below via UPI.
-                </p>
+               
 
-                <div style="background: transparent; border: 2px solid var(--accent-color); border-radius: 8px; padding: 14px 16px; margin: 0 auto 10px auto; max-width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 54px;">
-                    <div style="flex: 1; text-align: left;">
-                        <span style="color: #888; font-size: 0.7rem; display: block; margin-bottom: 0px; line-height: 1;">UPI Number</span>
-                        <span id="upiNumberDisplay" style="color: #fff; font-size: 1rem; font-weight: 600; font-family: monospace; line-height: 1;">9555577801</span>
+                <!-- NEW: Desktop 2-column payment layout with section headings -->
+                <div class="payment-methods-grid">
+                    <!-- LEFT: UPI Card with heading -->
+                    <div class="payment-card upi-card">
+                        <!-- NEW: Section heading above UPI card -->
+                        <p class="payment-card-heading">Pay ₹99 on number below via UPI</p>
+                        
+                        <!-- Mobile helper text (shows only on mobile) -->
+                        <p class="mobile-upi-helper">Pay ₹99 on the number below via any UPI app</p>
+                        
+                        <!-- NEW: Equal visual frame wrapper -->
+                        <div class="payment-option-frame">
+                            <div class="upi-display-box">
+                                <div style="text-align: center;">
+                                    <span style="color: #888; font-size: 0.75rem; display: block; margin-bottom: 4px; line-height: 1; font-weight: 500;">UPI Number</span>
+                                    <span id="upiNumberDisplay" style="color: #fff; font-size: 1.1rem; font-weight: 600; font-family: monospace; line-height: 1.2;">9555577801</span>
+                                </div>
+                                <button type="button" id="copyUpiBtn" style="background: transparent; border: 1px solid var(--accent-color); color: var(--accent-color); padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 6px; line-height: 1.1; -webkit-tap-highlight-color: transparent; touch-action: manipulation; align-self: center; width: 70px; transition: color 0.2s, border-color 0.2s;">
+                                    <span>📋</span>
+                                    <span>Copy</span>
+                                </button>
+                            </div>
+
+                            <p id="copyConfirmation" style="color: var(--accent-color); font-size: 0.8rem; margin-top: 8px; display: none; text-align: center;">
+                                Pay ₹99 via any UPI app.
+                            </p>
+                        </div>
                     </div>
-                    <button type="button" id="copyUpiBtn" style="background: transparent; border: 1px solid var(--accent-color); color: var(--accent-color); padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 500; display: flex; align-items: center; gap: 6px; line-height: 1.1; -webkit-tap-highlight-color: transparent; touch-action: manipulation;">
-                        <span>📋</span>
-                        <span>Copy</span>
-                    </button>
+
+                    <!-- RIGHT: QR Card with heading -->
+                    <div class="payment-card qr-card">
+                        <!-- NEW: Section heading above QR card -->
+                        <p class="payment-card-heading">Scan QR code to pay via any UPI app</p>
+                        
+                        <!-- DESKTOP: Static QR container (shown on desktop, hidden on mobile) -->
+                        <div class="payment-option-frame qr-desktop-only">
+                            <div id="qrContainerDesktop" style="background: white; padding: 10px; display: inline-block; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.3);">
+                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=9555577801@ptsbi&pn=NeoShiksha&am=99&cu=INR" alt="UPI QR Code" style="width: 160px; height: 160px; display: block;">
+                            </div>
+                            
+                            <p style="color: #888; font-size: 0.8rem; margin-top: 10px; text-align: center;">
+                                Scan using any UPI app
+                            </p>
+                        </div>
+
+                        <!-- MOBILE: Toggle-based QR container -->
+                        <div class="payment-option-frame qr-mobile-only">
+                            <!-- Show QR Button (Mobile only) -->
+                            <button id="showQrBtn" class="btn-secondary full-width" style="display: none; align-items: center; justify-content: center; text-align: center; margin-top: 0; margin-bottom: 48px;">
+                                Show QR Code
+                            </button>
+
+                            <!-- QR Code (toggled by button on mobile) -->
+                            <div id="qrContainer" style="background: white; padding: 10px; display: inline-block; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.3);">
+                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=9555577801@ptsbi&pn=NeoShiksha&am=99&cu=INR" alt="UPI QR Code" style="width: 160px; height: 160px; display: block;">
+                            </div>
+                            
+                            <p id="qrHelperText" style="color: #888; font-size: 0.8rem; margin-top: 10px; text-align: center;">
+                                Scan using any UPI app
+                            </p>
+                        </div>
+
+                        <!-- QR Alt text (mobile) -->
+                        <p style="color: #888; font-size: 0.85rem; margin: 6px 0; text-align: center; display: none;" class="qr-alt-text-mobile">
+                            or scan the QR code below
+                        </p>
+                    </div>
                 </div>
 
-                <p id="copyConfirmation" style="color: var(--accent-color); font-size: 0.8rem; margin-bottom: 20px; display: none;">
-                    Number copied. Complete payment in your UPI app.
-                </p>
-
-                <!-- QR Alternative Option -->
-                <p style="color: #888; font-size: 0.85rem; margin-bottom: 6px; margin-top: 4px;">
-                    or scan the QR code below
-                </p>
-
-                <!-- Show QR Button (Mobile only) -->
-                <button id="showQrBtn" class="btn-secondary full-width" style="display: none; align-items: center; justify-content: center; text-align: center; margin-top: 0; margin-bottom: 48px;">
-                    Show QR Code
-                </button>
-
-                <!-- QR Code (Desktop/larger screens) -->
-                <div id="qrContainer" style="background: white; padding: 10px; display: inline-block; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); margin-top: 15px;">
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=9555577801@ptsbi&pn=NeoShiksha&am=99&cu=INR" alt="UPI QR Code" style="width: 160px; height: 160px; display: block;">
-                </div>
-                
-                <p id="qrHelperText" style="color: #888; font-size: 0.8rem; margin-bottom: 25px; margin-top: 10px;">
-                    Scan using any UPI app
+                <!-- Mobile Secondary CTA: Prefer QR link (reuses existing QR toggle logic) -->
+                <p style="color: #888; font-size: 0.85rem; margin-bottom: 20px; margin-top: 12px; text-align: center;" class="mobile-qr-link" id="preferQrLink" style="cursor: pointer; text-decoration: underline; color: var(--accent-color);">
+                    Prefer QR? Tap to scan
                 </p>
 
                 <!-- WhatsApp CTA (Secondary) -->

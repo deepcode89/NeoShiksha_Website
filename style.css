@@ -57,16 +57,244 @@
     100% { box-shadow: 0 0 0 0 rgba(230, 126, 34, 0); }
 }
 
+/* NEW: Desktop 2-column payment layout (balanced, compact) */
+@media (min-width: 1024px) {
+    .payment-methods-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+        align-items: stretch;
+        justify-items: center;
+        margin: 25px auto;
+        max-width: 680px;
+        padding: 0 20px;
+    }
+
+    .payment-card {
+        width: 100%;
+        max-width: 300px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        text-align: center;
+    }
+
+    .upi-card {
+        align-items: center;
+    }
+
+    .qr-card {
+        align-items: center;
+    }
+
+    /* NEW: Section headings above each card */
+    .payment-card-heading {
+        color: #ccc;
+        font-size: 0.9rem;
+        font-weight: 500;
+        margin: 0 0 12px 0;
+        line-height: 1.3;
+    }
+
+    /* NEW: Equal visual frames for UPI and QR cards */
+    .payment-option-frame {
+        width: 280px;
+        min-height: 270px;
+        padding: 24px 20px;
+        border-radius: 12px;
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+    }
+
+    /* UPI display box - inner orange-bordered container, square tile design */
+    .upi-display-box {
+        background: transparent;
+        border: 2px solid var(--accent-color);
+        border-radius: 8px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        align-items: center;
+        justify-content: center;
+        width: 220px;
+        aspect-ratio: 1 / 1;
+    }
+
+    /* NEW: Reduce QR image size by ~12% for visual balance (160px → 140px) */
+    #qrContainer img {
+        width: 140px !important;
+        height: 140px !important;
+    }
+
+    #qrContainerDesktop img {
+        width: 140px !important;
+        height: 140px !important;
+    }
+
+    /* DESKTOP: Show static QR container, hide mobile QR container and button */
+    .qr-desktop-only {
+        display: flex !important;
+    }
+
+    .qr-mobile-only {
+        display: none !important;
+    }
+
+    /* Desktop: Hide "Show QR Code" button, display QR code by default */
+    #showQrBtn {
+        display: none !important;
+    }
+
+    #qrContainer {
+        display: inline-block !important;
+    }
+
+    /* Hide "or scan" text on desktop (layout makes it obvious) */
+    .qr-alt-text-mobile {
+        display: none !important;
+    }
+
+    /* Hide mobile QR link on desktop */
+    .mobile-qr-link {
+        display: none !important;
+    }
+
+    #qrContainer {
+        margin: 0 !important;
+    }
+
+    #qrHelperText {
+        margin: 0 !important;
+    }
+
+    /* Hide mobile UPI helper on desktop */
+    .mobile-upi-helper {
+        display: none !important;
+    }
+}
+
 /* Payment: hide QR code on small screens (mobile) */
 @media (max-width: 768px) {
+    /* Desktop layout reverts to vertical on mobile */
+    .payment-methods-grid {
+        display: block !important;
+        max-width: 100% !important;
+        margin: 10px 0 !important;
+        gap: 0 !important;
+        padding: 0 !important;
+    }
+
+    .payment-card {
+        max-width: 100% !important;
+        margin-bottom: 15px;
+        text-align: left;
+    }
+
+    /* Hide section headings on mobile (use original text) */
+    .payment-card-heading {
+        display: none !important;
+    }
+
+    /* MOBILE: Show mobile QR container, hide desktop QR container */
+    .qr-mobile-only {
+        display: flex !important;
+    }
+
+    .qr-desktop-only {
+        display: none !important;
+    }
+
+    /* Mobile UPI helper text - visible on mobile only */
+    .mobile-upi-helper {
+        display: block !important;
+        font-size: 0.85rem !important;
+        color: #888 !important;
+        text-align: center !important;
+        margin: 0 0 8px 0 !important;
+        line-height: 1.3 !important;
+    }
+
+    /* MOBILE: UPI block styled as primary CTA button - match Show QR Code styling */
+    .upi-card .payment-option-frame {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 !important;          /* Remove outer padding, let inner control spacing */
+        min-height: auto !important;
+        gap: 0 !important;              /* No gap for tight layout */
+        display: flex !important;
+        flex-direction: row !important; /* Horizontal layout directly */
+        align-items: stretch !important;    /* Stretch inner content */
+        justify-content: flex-start !important;
+        background-color: transparent !important;       /* Match button background */
+        border: 2px solid var(--accent-color) !important; /* Match button border */
+        border-radius: 8px !important;  /* Button-like rounded corners */
+    }
+
+    /* UPI display container - override inline flex-direction: column to row */
+    .upi-card .payment-option-frame > div:first-child {
+        flex: 1 !important;
+        text-align: left !important;
+        display: flex !important;       /* Ensure flex */
+        flex-direction: row !important; /* CRITICAL: Override inline column */
+        align-items: center !important; /* Vertical center */
+        justify-content: space-between !important; /* Space items */
+        padding: 12px 16px !important;  /* Compact padding */
+        gap: 8px !important;            /* Minimal gap */
+        background: transparent !important; /* Match outer */
+        border: none !important;        /* Remove inner border */
+        width: 100% !important;
+    }
+
+    /* Copy button on RIGHT side */
+    #copyUpiBtn {
+        flex-shrink: 0 !important;
+        white-space: nowrap !important;
+        margin-left: auto !important;   /* Push to right */
+    }
+
+    /* UPI number and label - left side, no centering */
+    .upi-card .payment-option-frame > div:first-child > div:first-child {
+        display: flex !important;
+        flex-direction: column !important; /* Label above number */
+        text-align: left !important;
+        gap: 2px !important;           /* Minimal gap between label and number */
+        margin: 0 !important;          /* Remove default margins */
+    }
+        
+    }
+
+    /* Mobile QR preference link - HIDDEN on mobile (button already provides same function) */
+    .mobile-qr-link {
+        display: none !important;
+    }
+
+    /* Hide ALL duplicate 'or scan' texts on mobile */
+    .qr-alt-text-mobile {
+        display: none !important;
+    }
+
     /* Keep the QR element in the DOM but hide it visually on narrow viewports */
     #qrContainer {
         display: none !important;
+        margin-top: 15px !important;
+        margin-bottom: 15px !important;
     }
     
-    /* Hide "Scan using any UPI app (desktop users)" text on mobile */
+    /* Hide "Scan using any UPI app (desktop users)" text on mobile by default */
     #qrHelperText {
         display: none !important;
+    }
+
+    /* Show helper text only when QR is visible */
+    #qrHelperText.visible-mobile {
+        display: block !important;
+        margin-top: 8px !important;
     }
 
     /* Show "Show QR code" button on mobile with matching WhatsApp button styling */
@@ -83,9 +311,13 @@
         line-height: 1 !important;          /* Match text stack line-height for visual parity */
     }
 
-    /* When QR is toggled visible on mobile, show the helper text */
+    /* When QR is toggled visible on mobile, center it properly */
     #qrContainer.visible-mobile {
-        display: inline-block !important;
+        display: flex !important;       /* Center content */
+        justify-content: center !important;
+        align-items: center !important;
+        margin: 0 auto !important;      /* Center horizontally */
+        width: 100% !important;
     }
 
     #qrHelperText.visible-mobile {
@@ -96,7 +328,7 @@
     .whatsapp-helper {
         margin-top: 28px !important;
     }
-}
+
 
 /* Show QR Code Button States */
 #showQrBtn {
@@ -259,6 +491,11 @@ body.scroll-locked {
     cursor: pointer;
 }
 
+/* --- Mobile Actions Container (Hidden on Desktop) --- */
+.nav-mobile-actions {
+    display: none;
+}
+
 /* =========================================
    MOBILE NAVBAR (Hamburger & Slide Menu) - FIXED
    ========================================= */
@@ -271,6 +508,53 @@ body.scroll-locked {
 
     .hamburger {
         display: block; /* Show icon */
+        transition: transform 0.2s ease;
+    }
+
+    /* Smooth icon morphing: bars → cross */
+    .hamburger i {
+        transition: transform 0.2s ease, opacity 0.2s ease;
+        display: inline-block;
+    }
+
+    /* Mobile Actions: Show button + hamburger side-by-side */
+    .nav-mobile-actions {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    /* Mobile Callback Button */
+    .btn-mobile-callback {
+        background-color: transparent;
+        color: var(--accent-color);
+        border: 1px solid var(--accent-color);
+        padding: 4px 10px;
+        font-size: 0.85rem;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: 600;
+        font-family: var(--font-main);
+        opacity: 1;
+        transform: translateY(0);
+        transition: opacity 0.2s ease, transform 0.2s ease;
+        pointer-events: auto;
+    }
+
+    .btn-mobile-callback:hover {
+        background-color: rgba(230, 126, 34, 0.1);
+        color: var(--accent-color);
+    }
+
+    .btn-mobile-callback:active {
+        transform: scale(0.95);
+    }
+
+    /* Hide callback button when menu is open — smooth fade & slide */
+    body.menu-open .btn-mobile-callback {
+        opacity: 0;
+        transform: translateY(-6px);
+        pointer-events: none;
     }
 
 .nav-links {
@@ -749,18 +1033,21 @@ body.scroll-locked {
     background-color: var(--secondary-color);
     position: relative;
     overflow: hidden; /* Keeps the gallery contained */
+    text-align: center;
 }
 
 .about-flex {
     display: flex;
     align-items: flex-start; /* Align to top */
     gap: 80px; /* Generous spacing */
+    flex-direction: column;
 }
 
 /* --- Left: Typography & Story --- */
 .about-text {
     flex: 1;
     z-index: 2;
+    width: 100%;
 }
 
 .about-headline {
@@ -953,6 +1240,27 @@ body.scroll-locked {
         gap: 40px;
     }
     
+    .about-gallery-wrapper {
+        display: none;
+    }
+}
+
+/* Desktop: Restore side-by-side layout */
+@media (min-width: 769px) {
+    .about-flex {
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 80px;
+        text-align: left;
+    }
+    
+    .about-text {
+        flex: 1;
+    }
+    
+    .about-gallery-wrapper {
+        flex: 0.8;
+    }
 }
 
 
@@ -1102,6 +1410,13 @@ body.scroll-locked {
     font-weight: 600;
 }
 
+/* WhatsApp specific styling */
+.social-btn.whatsapp:hover {
+    background-color: #25D366;
+    border-color: #25D366;
+    color: #000;
+}
+
 /* Bottom Bar */
 .footer-bottom {
     border-top: 1px solid #222;
@@ -1185,6 +1500,167 @@ body.scroll-locked {
 .dark-input:focus {
     outline: none;
     border-color: var(--accent-color);
+}
+
+/* ===== UNIFIED FORM INPUT NORMALIZATION ===== */
+/* Normalize ALL input types, selects, and textareas */
+input,
+select,
+textarea {
+    background-color: #0a0a0a !important;
+    color: #ffffff !important;
+    border: 1px solid #333 !important;
+    border-radius: 5px !important;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none !important;
+    border-color: var(--accent-color) !important;
+    box-shadow: 0 0 0 2px rgba(230, 126, 34, 0.1) !important;
+}
+
+/* Override input placeholder color */
+input::placeholder,
+textarea::placeholder {
+    color: #666 !important;
+    opacity: 1 !important;
+}
+
+/* Select dropdown styling */
+select {
+    padding: 10px 12px !important;
+    appearance: none !important;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23e67e22' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 20px;
+    padding-right: 40px !important;
+}
+
+/* Checkbox & Radio unified styling */
+input[type="checkbox"],
+input[type="radio"] {
+    accent-color: var(--accent-color) !important;
+    appearance: auto !important;
+    cursor: pointer !important;
+    width: auto !important;
+    height: auto !important;
+}
+
+/* Remove browser default checkbox appearance and create custom */
+input[type="checkbox"] {
+    -webkit-appearance: checkbox !important;
+    appearance: checkbox !important;
+    accent-color: var(--accent-color) !important;
+}
+
+/* Ensure all checked checkboxes use orange */
+input[type="checkbox"]:checked,
+input[type="radio"]:checked {
+    accent-color: var(--accent-color) !important;
+    background-color: var(--accent-color) !important;
+}
+
+/* Force orange accent for all checkbox containers */
+.checkbox-container input[type="checkbox"],
+.checkbox-group input[type="checkbox"] {
+    accent-color: var(--accent-color) !important;
+}
+
+.checkbox-container input[type="checkbox"]:checked,
+.checkbox-group input[type="checkbox"]:checked {
+    accent-color: var(--accent-color) !important;
+}
+
+/* Textarea styling */
+textarea {
+    padding: 12px !important;
+    resize: vertical !important;
+    min-height: 100px !important;
+    font-family: inherit !important;
+}
+
+/* ============================
+   FINAL FORM FIELD OVERRIDE
+   Force black background on ALL fields
+   ============================ */
+
+.modal input,
+.modal select,
+.modal textarea,
+.step-content input,
+.step-content select,
+.step-content textarea,
+.dark-input,
+.dark-input input,
+.dark-input select,
+.dark-input textarea {
+    background-color: #0b0b0b !important;
+    color: #ffffff !important;
+    border: 1px solid #2a2a2a !important;
+}
+
+/* Placeholder text */
+.modal input::placeholder,
+.modal textarea::placeholder {
+    color: #777 !important;
+}
+
+/* Focus state */
+.modal input:focus,
+.modal select:focus,
+.modal textarea:focus,
+.step-content input:focus,
+.step-content select:focus,
+.step-content textarea:focus {
+    border-color: var(--accent-color) !important;
+    box-shadow: 0 0 0 2px rgba(255,140,0,0.15) !important;
+    outline: none !important;
+}
+
+/* Autofill Chrome fix - CRITICAL */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    -webkit-text-fill-color: #ffffff !important;
+    -webkit-box-shadow: 0 0 0px 1000px #0b0b0b inset !important;
+    transition: background-color 9999s ease-in-out 0s;
+}
+
+input:-webkit-autofill::first-line {
+    color: #ffffff !important;
+}
+
+/* Override any inline style backgrounds */
+input[style*="background"],
+select[style*="background"],
+textarea[style*="background"] {
+    background-color: #0b0b0b !important;
+}
+
+/* Force dark background on all modal inputs regardless of class */
+.modal input[type="text"],
+.modal input[type="email"],
+.modal input[type="password"],
+.modal input[type="number"],
+.modal input[type="tel"],
+.modal input[type="date"] {
+    background-color: #0b0b0b !important;
+    color: #ffffff !important;
+    border: 1px solid #2a2a2a !important;
+}
+
+.modal input[type="text"]:focus,
+.modal input[type="email"]:focus,
+.modal input[type="password"]:focus,
+.modal input[type="number"]:focus,
+.modal input[type="tel"]:focus,
+.modal input[type="date"]:focus {
+    border-color: var(--accent-color) !important;
+    outline: none !important;
 }
 
 /* 4. Flex Row for Small Inputs (Class/Board side-by-side) */
@@ -1680,11 +2156,27 @@ body.scroll-locked {
     font-size: 1.2rem;
 }
 
+/* Desktop: Fix checkbox wrapping for Classes & Boards sections */
+@media (min-width: 1024px) {
+    .checkbox-group label {
+        display: inline-flex;
+        align-items: center;
+        margin-right: 20px;
+        white-space: nowrap;
+        padding: 4px 0;
+    }
+}
+
 /* Mobile Fix for Reality Box */
 @media (max-width: 768px) {
     .reality-flex {
         flex-direction: column;
         gap: 30px;
+    }
+
+    /* Mobile: Align toggle button spacing with process grid gap */
+    .process-section .toggle-container {
+        margin-bottom: 30px;
     }
 }
 
