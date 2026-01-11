@@ -115,6 +115,7 @@ window.addEventListener('popstate', (event) => {
             parentModal.style.display = 'none';
             unlockScroll();
         } else if (teacherModal && teacherModal.style.display === 'block') {
+            resetTeacherModal();
             teacherModal.style.display = 'none';
             unlockScroll();
         } else if (callbackModal && callbackModal.style.display === 'block') {
@@ -216,6 +217,22 @@ function closeCallbackForm() {
     }
 }
 
+// Reset Teacher Modal to Initial State (Force-hide transition screen)
+function resetTeacherModal() {
+    const teacherTransition = document.getElementById('teacherTransition');
+    if (teacherTransition) {
+        teacherTransition.style.display = 'none';
+    }
+    const paymentSection = document.getElementById('paymentSection');
+    if (paymentSection) {
+        paymentSection.style.display = 'none';
+    }
+    const teacherPaymentIntro = document.getElementById('teacherPaymentIntro');
+    if (teacherPaymentIntro) {
+        teacherPaymentIntro.style.display = 'none';
+    }
+}
+
 // Close Logic (Clicking X)
 if(closeParent) {
     closeParent.onclick = function() {
@@ -226,6 +243,7 @@ if(closeParent) {
 }
 if(closeTeacher) {
     closeTeacher.onclick = function() {
+        resetTeacherModal();
         teacherModal.style.display = "none";
         unlockScroll(); /* Unlock background scroll */
         popModalState(); /* Remove from modal stack */
@@ -240,6 +258,7 @@ window.onclick = function(event) {
         popModalState(); /* Remove from modal stack */
     }
     if (event.target == teacherModal) {
+        resetTeacherModal();
         teacherModal.style.display = "none";
         unlockScroll(); /* Unlock background scroll */
         popModalState(); /* Remove from modal stack */

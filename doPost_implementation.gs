@@ -1,116 +1,143 @@
 function doPost(e) {
+  var lock = LockService.getScriptLock();
+  var lockAcquired = false;
+
   try {
-    var lock = LockService.getScriptLock();
-    lock.tryLock(10000);
+    lockAcquired = lock.tryLock(10000);
 
     var doc = SpreadsheetApp.getActiveSpreadsheet();
     var sheet = doc.getSheetByName('MASTER_DATA');
 
-    // Define the approved headers in their correct order
     var approvedHeaders = [
-      'Timestamp', 'Source', 'User_Type', 'Name', 'Phone', 'City', 'Zone', 'Locality', 'Pincode',
-      'Gender_Info', 'Qualification', 'Experience', 'Subject', 'Class', 'Board', 'Status', 'Full_JSON_Data'
+      'Timestamp',
+      'Source',
+      'User_Type',
+      'Name',
+      'Phone',
+      'City',
+      'Zone',
+      'Locality',
+      'Pincode',
+      'Gender_Info',
+      'Qualification',
+      'Experience',
+      'Subject',
+      'Class',
+      'Board',
+      'Mode',
+      'Status',
+      'Full_JSON_Data'
     ];
 
-    // Create sheet with approved headers if it doesn't exist
     if (!sheet) {
       sheet = doc.insertSheet('MASTER_DATA');
       sheet.appendRow(approvedHeaders);
     }
 
-    // Parse incoming payload
-    var requestBody = e.postData.contents;
-    var data = JSON.parse(requestBody);
+    var data = JSON.parse(e.postData.contents);
 
-    // Read headers dynamically from row 1 (case-sensitive)
-    var headerRow = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
-    var headerMap = {}; // Maps header name to column index (0-based)
-    for (var i = 0; i < headerRow.length; i++) {
-      headerMap[headerRow[i]] = i;
-    }
+    var headerRow = sheet
+      .getRange(1, 1, 1, sheet.getLastColumn())
+      .getValues()[0];
 
-    // Create new row array with same length as current headers
+    var headerMap = {};
+    headerRow.forEach(function (h, i) {
+      headerMap[h] = i;
+    });
+
     var newRow = new Array(headerRow.length);
 
-    // Helper: Set value in row by header name (case-sensitive, exact match)
-    function setRowValueByHeader(headerName, value) {
-      if (headerName in headerMap) {
-        newRow[headerMap[headerName]] = value || '';
+    function setVal(header, value) {
+      if (header in headerMap) {
+        newRow[headerMap[header]] =
+          value !== undefined && value !== null ? value : '';
       }
     }
 
-    // ========== SERVER-SIDE TIMESTAMP ==========
-    setRowValueByHeader('Timestamp', new Date());
+    /* ================= CORE FIELDS ================= */
 
-    // ========== SOURCE ==========
-    setRowValueByHeader('Source', data.source || 'Web');
+    setVal('Timestamp', new Date());
+    setVal('Source', data.source || 'Web');
 
-    // ========== USER_TYPE NORMALIZATION (CRITICAL BUSINESS RULE) ==========
-    // If form_type is "CallbackForm", override user_type with Callback_Parent or Callback_Teacher
     var userType = data.user_type || '';
     if (data.form_type === 'CallbackForm' && data.callbackUserType) {
-      if (data.callbackUserType === 'Parent') {
-        userType = 'Callback_Parent';
-      } else if (data.callbackUserType === 'Teacher') {
-        userType = 'Callback_Teacher';
-      }
+      userType =
+        data.callbackUserType === 'Parent'
+          ? 'Callback_Parent'
+          : 'Callback_Teacher';
     }
-    setRowValueByHeader('User_Type', userType);
+    setVal('User_Type', userType);
 
-    // ========== NAME NORMALIZATION ==========
-    // Try multiple sources in order of priority
-    var finalName = data.name || data.teacherName || data.parentName || '';
-    setRowValueByHeader('Name', finalName);
+    setVal(
+      'Name',
+      data.name || data.teacherName || data.parentName || ''
+    );
 
-    // ========== FIELD MAPPINGS (payload field → sheet header) ==========
-    // Maps single-value fields only; arrays are left blank and stored in Full_JSON_Data
-    var fieldMappings = {
-      'phone': 'Phone',
-      'city': 'City',
-      'zone': 'Zone',
-      'locality': 'Locality',
-      'pincode': 'Pincode',
-      'gender': 'Gender_Info',
-      'qualification': 'Qualification',
-      'experience': 'Experience',
-      'board': 'Board',
-      'class': 'Class'
+    /* ================= SIMPLE FIELD MAPPING ================= */
+
+    var fieldMap = {
+      phone: 'Phone',
+      city: 'City',
+      zone: 'Zone',
+      locality: 'Locality',
+      pincode: 'Pincode',
+      gender: 'Gender_Info',
+      qualification: 'Qualification',
+      experience: 'Experience',
+      mode: 'Mode'
     };
 
-    // Apply field mappings (case-sensitive)
-    for (var payloadField in fieldMappings) {
-      if (payloadField in data) {
-        var headerName = fieldMappings[payloadField];
-        var value = data[payloadField];
-        
-        // Skip arrays; they are included in Full_JSON_Data only
-        // (Arrays like 'subjects', 'classes', 'boards' from frontend are NOT mapped to individual columns)
-        if (Array.isArray(value)) {
-          continue;
-        }
-        
-        setRowValueByHeader(headerName, value);
+    for (var key in fieldMap) {
+      if (key in data && !Array.isArray(data[key])) {
+        setVal(fieldMap[key], data[key]);
       }
     }
 
-    // ========== STATUS (SERVER-SIDE DEFAULT) ==========
-    setRowValueByHeader('Status', 'New');
+    /* ================= DISPLAY LAYER (COMMA STRINGS) ================= */
 
-    // ========== FULL_JSON_DATA (COMPLETE RAW PAYLOAD) ==========
-    // Stores entire payload as stringified JSON, including arrays, metadata, and all fields
-    setRowValueByHeader('Full_JSON_Data', JSON.stringify(data));
+    // SUBJECT
+    if (Array.isArray(data.subjects) && data.subjects.length > 0) {
+      setVal('Subject', data.subjects.join(', '));
+    } else if (typeof data.subjects === 'string') {
+      setVal('Subject', data.subjects);
+    }
 
-    // Append the row to the sheet
+    // BOARD
+    if (Array.isArray(data.boards) && data.boards.length > 0) {
+      setVal('Board', data.boards.join(', '));
+    } else if (typeof data.boards === 'string') {
+      setVal('Board', data.boards);
+    } else if (data.board) {
+      setVal('Board', data.board);
+    }
+
+    // CLASS
+    if (Array.isArray(data.classes) && data.classes.length > 0) {
+      setVal('Class', data.classes.join(', '));
+    } else if (typeof data.classes === 'string') {
+      setVal('Class', data.classes);
+    } else if (data.class) {
+      setVal('Class', data.class);
+    }
+
+    /* ================= FINAL FIELDS ================= */
+
+    setVal('Status', 'New');
+    setVal('Full_JSON_Data', JSON.stringify(data));
+
     sheet.appendRow(newRow);
     SpreadsheetApp.flush();
-    lock.releaseLock();
 
-    return ContentService.createTextOutput(JSON.stringify({ result: 'success' }))
-      .setMimeType(ContentService.MimeType.JSON);
+    if (lockAcquired) lock.releaseLock();
+
+    return ContentService.createTextOutput(
+      JSON.stringify({ result: 'success' })
+    ).setMimeType(ContentService.MimeType.JSON);
 
   } catch (err) {
-    lock.releaseLock();
-    return ContentService.createTextOutput(JSON.stringify({ result: 'error', error: err.toString() }))
-      .setMimeType(ContentService.MimeType.JSON);
+    if (lockAcquired) lock.releaseLock();
+    return ContentService.createTextOutput(
+      JSON.stringify({ result: 'error', error: err.toString() })
+    ).setMimeType(ContentService.MimeType.JSON);
   }
 }

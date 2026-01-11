@@ -204,6 +204,8 @@
     /* MOBILE: Show mobile QR container, hide desktop QR container */
     .qr-mobile-only {
         display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
     }
 
     .qr-desktop-only {

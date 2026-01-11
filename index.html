@@ -588,14 +588,20 @@
                         <div class="row-flex">
                             <select name="class" required class="dark-input half-width">
                                 <option value="" disabled selected>Select Class</option>
-                                <option value="1st to 5th">1st to 5th</option>
-                                <option value="6th to 8th">6th to 8th</option>
+                                <option value="1st">1st</option>
+                                <option value="2nd">2nd</option>
+                                <option value="3rd">3rd</option>
+                                <option value="4th">4th</option>
+                                <option value="5th">5th</option>
+                                <option value="6th">6th</option>
+                                <option value="7th">7th</option>
+                                <option value="8th">8th</option>
                                 <option value="9th">9th</option>
                                 <option value="10th">10th</option>
                                 <option value="11th">11th</option>
                                 <option value="12th">12th</option>
-                                <option value="Bachelors">Bachelors</option>
-                                <option value="Masters">Masters</option>
+                                <option value="Undergraduate (UG)">Undergraduate (UG)</option>
+                                <option value="Postgraduate (PG)">Postgraduate (PG)</option>
                             </select>
 
                             <select name="board" required class="dark-input half-width">
@@ -625,7 +631,7 @@
 
                         <label class="input-label">Select Subjects:</label>
                         <div class="checkbox-container">
-                            <label><input type="checkbox" name="subjects" value="All Subjects"> All Subjects</label>
+                            <label><input type="checkbox" name="subjects" value="All Subjects">  All Subjects (Primary & Middle)</label>
                             <label><input type="checkbox" name="subjects" value="Maths"> Maths</label>
                             <label><input type="checkbox" name="subjects" value="Science"> Science</label>
                             <label><input type="checkbox" name="subjects" value="English"> English</label>
@@ -649,6 +655,7 @@
                                     <option value="" selected>Classes/Week</option>
                                     <option value="3 Days">3 Days</option>
                                     <option value="5 Days">5 Days</option>
+                                    <option value="6 Days">6 Days</option>
                                     <option value="Weekend">Weekend</option>
                                 </select>
                                 <select name="duration" class="dark-input half-width">
@@ -656,6 +663,7 @@
                                     <option value="1 hr">1 hr</option>
                                     <option value="1.5 hr">1.5 hr</option>
                                     <option value="2 hr">2 hr</option>
+                                    <option value="3 hr">3 hr</option>
                                 </select>
                             </div>
                         </div>
@@ -926,9 +934,7 @@
                                 <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=9555577801@ptsbi&pn=NeoShiksha&am=99&cu=INR" alt="UPI QR Code" style="width: 160px; height: 160px; display: block;">
                             </div>
                             
-                            <p style="color: #888; font-size: 0.8rem; margin-top: 10px; text-align: center;">
-                                Scan using any UPI app
-                            </p>
+                            
                         </div>
 
                         <!-- MOBILE: Toggle-based QR container -->
